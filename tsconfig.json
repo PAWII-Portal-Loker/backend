@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "importsNotUsedAsValues": "remove",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@base/*": ["src/common/base/*"],
+      "@utils/*": ["src/common/utils/*"],
+      "@types": ["src/common/types/index.ts"],
+      "@config/*": ["src/config/*"],
+      "@user/*": ["src/modules/user/*"]
+    }
+  }
+}
