@@ -1,5 +1,5 @@
 import BaseService from "@base/service";
-import { ServiceError } from "@types";
+import { Pagination, ServiceError } from "@types";
 import { UserDto } from "@user/dtos/user/user.dto";
 import { UserModel } from "@user/models/user.model";
 import {
@@ -7,15 +7,18 @@ import {
   StatusConflict,
   StatusNotFound,
 } from "@utils/statusCodes";
-import { isValidObjectId } from "mongoose";
+import { FilterQuery, isValidObjectId } from "mongoose";
 
 class UserService extends BaseService<UserDto> {
   constructor() {
     super(UserModel);
   }
 
-  public async getAllUsers(): Promise<UserDto[] | ServiceError> {
-    const users = await this.find();
+  public async getAllUsers(
+    filters: FilterQuery<unknown>,
+    paginator?: Pagination,
+  ): Promise<UserDto[] | ServiceError> {
+    const users = await this.find(filters, paginator);
     if (!users) {
       return this.throwError("Error getting users", StatusBadRequest);
     }

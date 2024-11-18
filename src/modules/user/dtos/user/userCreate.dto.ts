@@ -20,4 +20,6 @@ export const UserCreateSchema: Yup.Schema<UserCreateDto> = Yup.object({
     .required("password is required")
     .min(6, "password must be at least 6 characters")
     .max(100, "password must be at most 100 characters"),
-});
+})
+  .noUnknown(true)
+  .strict(true);

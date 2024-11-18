@@ -1,6 +1,6 @@
 import AuthMiddleware from "@config/auth.middleware";
 import RedisDatabase from "@config/redis.database";
-import { Response as DataResponse, ServiceError } from "@types";
+import { Response as DataResponse, Pagination, ServiceError } from "@types";
 import { StatusBadRequest, StatusOk } from "@utils/statusCodes";
 import {
   Request as ExpressRequest,
@@ -9,13 +9,15 @@ import {
 } from "express";
 import { Router } from "express";
 import * as Yup from "yup";
+import BasePagination from "./pagination";
 
-class BaseController {
+class BaseController extends BasePagination {
   protected router = Router();
   protected redisDatabase: RedisDatabase;
   protected authMiddleware: AuthMiddleware;
 
   constructor() {
+    super();
     this.redisDatabase = RedisDatabase.getInstance();
     this.authMiddleware = new AuthMiddleware(this.redisDatabase);
   }
@@ -32,22 +34,40 @@ class BaseController {
     req: ExpressRequest,
     res: ExpressResponse,
     schema: Yup.Schema<T>,
+    isQuery = false,
   ): T | null {
-    const data = req.body;
+    const data = isQuery
+      ? schema.cast(req.query, { stripUnknown: false })
+      : req.body;
+
     try {
       schema.validateSync(data, { abortEarly: false });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
+        const unknownParams =
+          (error.inner[0].params?.unknown as string)?.split(", ") || [];
+
+        const strictParamsErrors = unknownParams.map((param) => {
+          return {
+            field: param,
+            message: `${param} is not allowed`,
+          };
+        });
+
+        const schemaErrors = error.inner
+          .filter((err) => err.path !== "")
+          .map((err) => ({
+            field: err.path,
+            message: err.message,
+          }));
+
         const errorResponse = {
           statusCode: StatusBadRequest,
           message: "Validation Error",
-          errors: error.inner.map((err) => ({
-            field: err.path || "Unknown Field",
-            message: err.message,
-          })),
+          errors: [...strictParamsErrors, ...schemaErrors],
         };
-        res.json(Object.assign({}, baseErrorRes, errorResponse));
 
+        res.json(Object.assign({}, baseErrorRes, errorResponse));
         return null;
       }
     }
@@ -55,11 +75,20 @@ class BaseController {
     return data;
   }
 
+  protected validateQuery<T>(
+    req: ExpressRequest,
+    res: ExpressResponse,
+    schema: Yup.Schema<T>,
+  ): T | null {
+    return this.validate(req, res, schema, true);
+  }
+
   protected handleSuccess(
     res: ExpressResponse,
     data: Partial<DataResponse>,
+    pagination?: Pagination,
   ): void {
-    res.json(Object.assign({}, baseSuccessRes, data));
+    res.json(Object.assign({}, baseSuccessRes, data, { pagination }));
   }
 
   protected handleError(
