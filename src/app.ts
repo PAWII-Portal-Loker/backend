@@ -1,19 +1,21 @@
-import Database from "@config/database";
+import MongoDatabase from "@config/mongo.database";
+import RedisDatabase from "@config/redis.database";
 import Router from "@config/router";
 import UserController from "@user/controllers/user.controller";
-import Env from "@utils/env";
+import env from "@utils/env";
 
-const env = new Env<UserServiceEnv>(".env");
-
-new Database({
-  dbHost: env.get("DB_HOST"),
-  dbPort: Number(env.get("DB_PORT")),
-  dbUser: env.get("DB_USER"),
-  dbPassword: env.get("DB_PASSWORD"),
-  dbName: env.get("DB_NAME"),
+new MongoDatabase({
+  dbHost: env.get("MONGO_DB_HOST"),
+  dbPort: Number(env.get("MONGO_DB_PORT")),
+  dbName: env.get("MONGO_DB_NAME"),
 });
 
-const router = new Router(Number(env.get("BE_PORT")));
+RedisDatabase.getInstance().initialize({
+  dbHost: env.get("REDIS_DB_HOST"),
+  dbPort: Number(env.get("REDIS_DB_PORT")),
+});
+
+const router = new Router();
 
 router.app.use("/", new UserController().getRouter());
 

@@ -10,4 +10,4 @@ class Env<T> {
   }
 }
 
-export default Env;
+export default new Env<EnvInterface>(".env");

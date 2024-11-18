@@ -1,13 +1,13 @@
-type UserServiceEnv = {
+type EnvInterface = {
   ENVIRONMENT: string;
 
   BE_HOST: string;
   BE_PORT: number;
 
   // database
-  DB_HOST: string;
-  DB_PORT: number;
-  DB_USER: string;
-  DB_PASSWORD: string;
-  DB_NAME: string;
+  MONGO_DB_HOST: string;
+  MONGO_DB_PORT: number;
+  MONGO_DB_NAME: string;
+  REDIS_DB_HOST: string;
+  REDIS_DB_PORT: number;
 };
