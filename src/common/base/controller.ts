@@ -1,17 +1,31 @@
+import AuthMiddleware from "@config/auth.middleware";
+import RedisDatabase from "@config/redis.database";
 import { Response as DataResponse, ServiceError } from "@types";
 import { StatusBadRequest, StatusOk } from "@utils/statusCodes";
 import {
   Request as ExpressRequest,
   Response as ExpressResponse,
+  RequestHandler,
 } from "express";
 import { Router } from "express";
 import * as Yup from "yup";
 
 class BaseController {
   protected router = Router();
+  protected redisDatabase: RedisDatabase;
+  protected authMiddleware: AuthMiddleware;
+
+  constructor() {
+    this.redisDatabase = RedisDatabase.getInstance();
+    this.authMiddleware = new AuthMiddleware(this.redisDatabase);
+  }
 
   public getRouter(): Router {
     return this.router;
+  }
+
+  protected get mustAuthorized(): RequestHandler {
+    return this.authMiddleware.refreshAccessToken.bind(this.authMiddleware);
   }
 
   protected validate<T>(

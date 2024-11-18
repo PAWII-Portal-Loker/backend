@@ -1,16 +1,19 @@
 import { toSnakeCase } from "@utils/caseConvert";
 import express, { NextFunction, Request, Response } from "express";
+import env from "@utils/env";
 
 class Router {
   app: express.Application;
   port: number;
 
-  constructor(port: string | number) {
+  constructor() {
     this.app = express();
+
     this.app.use(this.snakeCaseHandler());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    this.port = Number(port);
+
+    this.port = Number(env.get("BE_PORT"));
   }
 
   listen() {

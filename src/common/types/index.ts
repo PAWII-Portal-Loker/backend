@@ -16,8 +16,8 @@ export type ErrorResponse = {
 export type Pagination = {
   page: number;
   limit: number;
-  totalItems: number;
-  totalPages: number;
+  totalItems?: number;
+  totalPages?: number;
 };
 
 export type StatusCodes = number;
