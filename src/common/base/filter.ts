@@ -38,22 +38,17 @@ class BaseFilter {
     value: string | undefined,
     filterCallback?: (key: string, value: string) => Record<string, unknown>,
   ) {
-    if (value && this.isSafe(value)) {
-      if (filterCallback) {
-        Object.assign(filters, filterCallback(key, value));
-      } else {
-        Object.assign(filters, this.filter({ key, value }));
-      }
+    if (!value || !this.isSafe(value)) {
+      return;
     }
-  }
 
-  protected withPagination(
-    filters: Record<string, unknown>,
-    page: number | undefined,
-    limit: number | undefined,
-  ) {
-    const offset = ((page ?? 1) - 1) * (limit ?? 10);
-    Object.assign(filters, { offset, limit });
+    if (filterCallback) {
+      Object.assign(filters, filterCallback(key, value));
+      return;
+    }
+
+    Object.assign(filters, this.filter({ key, value }));
+    return;
   }
 }
 

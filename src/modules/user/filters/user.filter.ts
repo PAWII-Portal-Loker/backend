@@ -9,8 +9,6 @@ class UserFilter extends BaseFilter {
     this.safelyAssign(filters, "name", reqParam.name);
     this.safelyAssign(filters, "email", reqParam.email);
 
-    // this.withPagination(filters, reqParam.page, reqParam.limit);
-
     return filters;
   }
 }
