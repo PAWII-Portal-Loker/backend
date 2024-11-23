@@ -37,7 +37,6 @@ class BaseController extends BasePagination {
     schema: Yup.Schema<T>,
     isQueryParam = false,
   ): T | null {
-    console.log("pass4");
     const data = isQueryParam
       ? schema.cast(req.query, { stripUnknown: false })
       : req.body;
