@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import RedisDatabase from "./redis.database";
 import { StatusForbidden } from "@utils/statusCodes";
 import env from "@utils/env";
+import RedisDatabase from "@config/databases/redis";
 
 class AuthMiddleware {
   private redisClient: RedisDatabase;

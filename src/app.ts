@@ -1,5 +1,5 @@
-import MongoDatabase from "@config/mongo.database";
-import RedisDatabase from "@config/redis.database";
+import MongoDatabase from "@config/databases/mongo";
+import RedisDatabase from "@config/databases/redis";
 import Router from "@config/router";
 import UserController from "@user/controllers/user.controller";
 import env from "@utils/env";

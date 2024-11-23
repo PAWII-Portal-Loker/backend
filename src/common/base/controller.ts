@@ -1,5 +1,4 @@
-import AuthMiddleware from "@config/auth.middleware";
-import RedisDatabase from "@config/redis.database";
+import RedisDatabase from "@config/databases/redis";
 import { Response as DataResponse, Pagination, ServiceError } from "@types";
 import { StatusBadRequest } from "@utils/statusCodes";
 import {
@@ -11,6 +10,7 @@ import { Router } from "express";
 import * as Yup from "yup";
 import BasePagination from "./pagination";
 import { baseErrorRes, baseSuccessRes } from "@consts";
+import AuthMiddleware from "@config/router/middlewares/auth";
 
 class BaseController extends BasePagination {
   protected router = Router();
