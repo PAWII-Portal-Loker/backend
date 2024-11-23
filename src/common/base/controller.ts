@@ -93,18 +93,27 @@ class BaseController extends BasePagination {
 
   protected handleError(
     res: ExpressResponse,
-    err: Partial<ServiceError>,
+    data: Partial<ServiceError>,
   ): void {
     res.json(
       Object.assign({}, baseErrorRes, {
-        statusCode: err.statusCode,
-        message: err.message,
+        statusCode: data.statusCode,
+        message: data.message,
       }),
     );
   }
 
-  protected isServiceError(obj: unknown | ServiceError): obj is ServiceError {
-    return (obj as ServiceError).error !== undefined;
+  protected isServiceError(
+    res: ExpressResponse,
+    data: unknown | ServiceError,
+  ): data is ServiceError {
+    const isError = (data as ServiceError).error !== undefined;
+
+    if (isError) {
+      this.handleError(res, data as ServiceError);
+    }
+
+    return isError;
   }
 }
 

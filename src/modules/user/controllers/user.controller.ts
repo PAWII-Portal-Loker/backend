@@ -36,8 +36,8 @@ class UserController extends BaseController {
         this.userService.getAllUsers(filters, paginator),
         this.userService.count(filters),
       ]);
-      if (this.isServiceError(users)) {
-        return this.handleError(res, users);
+      if (this.isServiceError(res, users)) {
+        return;
       }
 
       return this.handleSuccess(
@@ -56,8 +56,8 @@ class UserController extends BaseController {
       const userId = req.params.id;
       const user = await this.userService.getUserById(userId);
 
-      if (this.isServiceError(user)) {
-        return this.handleError(res, user);
+      if (this.isServiceError(res, user)) {
+        return;
       }
 
       return this.handleSuccess(res, {
@@ -75,8 +75,8 @@ class UserController extends BaseController {
       }
 
       const newUser = await this.userService.createUser(reqBody);
-      if (this.isServiceError(newUser)) {
-        return this.handleError(res, newUser);
+      if (this.isServiceError(res, newUser)) {
+        return;
       }
 
       return this.handleSuccess(res, {
