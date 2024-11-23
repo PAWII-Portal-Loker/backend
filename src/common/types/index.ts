@@ -34,3 +34,8 @@ export type ValidationError = {
     message: string;
   }[];
 };
+
+export type Timestamps = {
+  createdAt: Date;
+  updatedAt: Date;
+};
