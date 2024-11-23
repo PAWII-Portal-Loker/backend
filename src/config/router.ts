@@ -1,6 +1,8 @@
 import { toSnakeCase } from "@utils/caseConvert";
 import express, { NextFunction, Request, Response } from "express";
 import env from "@utils/env";
+import { StatusBadRequest } from "@utils/statusCodes";
+import { baseErrorRes } from "@consts";
 
 class Router {
   app: express.Application;
@@ -10,7 +12,7 @@ class Router {
     this.app = express();
 
     this.app.use(this.snakeCaseHandler());
-    this.app.use(express.json());
+    this.app.use(this.jsonParseHandler());
     this.app.use(express.urlencoded({ extended: true }));
 
     this.port = Number(env.get("BE_PORT"));
@@ -22,7 +24,28 @@ class Router {
     });
   }
 
-  snakeCaseHandler() {
+  private jsonParseHandler() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      express.json()(req, res, (err) => {
+        if (!err) {
+          return next();
+        }
+
+        if (!(err instanceof SyntaxError && "body" in err)) {
+          return next(err);
+        }
+
+        return res.status(StatusBadRequest).json(
+          Object.assign({}, baseErrorRes, {
+            statusCode: StatusBadRequest,
+            message: "Invalid JSON body",
+          }),
+        );
+      });
+    };
+  }
+
+  private snakeCaseHandler() {
     return (_: Request, res: Response, next: NextFunction) => {
       const originalSend = res.send.bind(res);
 

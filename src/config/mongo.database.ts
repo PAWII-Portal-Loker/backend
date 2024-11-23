@@ -15,7 +15,7 @@ class MongoDatabase {
     });
 
     this.dbInstance.on("error", (err) => {
-      console.error("MongoDB connection error:", err);
+      throw new Error(`Mongo DB connection error: ${err}`);
     });
   }
 

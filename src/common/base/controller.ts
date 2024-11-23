@@ -1,7 +1,7 @@
 import AuthMiddleware from "@config/auth.middleware";
 import RedisDatabase from "@config/redis.database";
 import { Response as DataResponse, Pagination, ServiceError } from "@types";
-import { StatusBadRequest, StatusOk } from "@utils/statusCodes";
+import { StatusBadRequest } from "@utils/statusCodes";
 import {
   Request as ExpressRequest,
   Response as ExpressResponse,
@@ -10,6 +10,7 @@ import {
 import { Router } from "express";
 import * as Yup from "yup";
 import BasePagination from "./pagination";
+import { baseErrorRes, baseSuccessRes } from "@consts";
 
 class BaseController extends BasePagination {
   protected router = Router();
@@ -34,42 +35,48 @@ class BaseController extends BasePagination {
     req: ExpressRequest,
     res: ExpressResponse,
     schema: Yup.Schema<T>,
-    isQuery = false,
+    isQueryParam = false,
   ): T | null {
-    const data = isQuery
+    console.log("pass4");
+    const data = isQueryParam
       ? schema.cast(req.query, { stripUnknown: false })
       : req.body;
 
     try {
       schema.validateSync(data, { abortEarly: false });
     } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        const unknownParams =
-          (error.inner[0].params?.unknown as string)?.split(", ") || [];
+      if (!(error instanceof Yup.ValidationError)) {
+        res
+          .status(baseErrorRes.statusCode)
+          .json(Object.assign({}, baseErrorRes, error));
+        throw error;
+      }
 
-        const strictParamsErrors = unknownParams.map((param) => {
-          return {
-            field: param,
-            message: `${param} is not allowed`,
-          };
-        });
+      const unknownParams =
+        (error.inner[0].params?.unknown as string)?.split(", ") || [];
 
-        const schemaErrors = error.inner
-          .filter((err) => err.path !== "")
-          .map((err) => ({
-            field: err.path,
-            message: err.message,
-          }));
+      const strictParamsErrors = unknownParams.map((param) => {
+        return {
+          field: param,
+          message: `${param} is not allowed`,
+        };
+      });
 
-        const errorResponse = {
+      const schemaErrors = error.inner
+        .filter((err) => err.path !== "")
+        .map((err) => ({
+          field: err.path,
+          message: err.message,
+        }));
+
+      res.status(StatusBadRequest).json(
+        Object.assign({}, baseErrorRes, {
           statusCode: StatusBadRequest,
           message: "Validation Error",
           errors: [...strictParamsErrors, ...schemaErrors],
-        };
-
-        res.json(Object.assign({}, baseErrorRes, errorResponse));
-        return null;
-      }
+        }),
+      );
+      return null;
     }
 
     return data;
@@ -88,17 +95,16 @@ class BaseController extends BasePagination {
     data: Partial<DataResponse>,
     pagination?: Pagination,
   ): void {
-    res.json(Object.assign({}, baseSuccessRes, data, { pagination }));
+    res
+      .status(data.statusCode ?? baseSuccessRes.statusCode)
+      .json(Object.assign({}, baseSuccessRes, data, { pagination }));
   }
 
-  protected handleError(
-    res: ExpressResponse,
-    data: Partial<ServiceError>,
-  ): void {
-    res.json(
+  protected handleError(res: ExpressResponse, data: ServiceError): void {
+    res.status(data.statusCode ?? baseErrorRes.statusCode).json(
       Object.assign({}, baseErrorRes, {
         statusCode: data.statusCode,
-        message: data.message,
+        message: data.message ?? "Internal Server Error",
       }),
     );
   }
@@ -116,19 +122,5 @@ class BaseController extends BasePagination {
     return isError;
   }
 }
-
-const baseSuccessRes = Object.freeze({
-  success: true,
-  statusCode: StatusOk,
-  message: "Success",
-  data: {},
-});
-
-const baseErrorRes = Object.freeze({
-  success: false,
-  statusCode: 500,
-  message: "Error",
-  errors: [],
-});
 
 export default BaseController;

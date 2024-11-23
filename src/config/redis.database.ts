@@ -29,7 +29,7 @@ class RedisDatabase {
     });
 
     this.redisClient.on("error", (err) => {
-      console.error("Redis connection error:", err);
+      throw new Error(`Redis DB connection error: ${err}`);
     });
   }
 
