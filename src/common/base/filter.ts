@@ -1,5 +1,9 @@
+import { baseSortKey } from "@consts";
+import { OrderBy, Sorter } from "@types";
+import { toCamelCase } from "@utils/caseConvert";
+
 class BaseFilter {
-  protected filter(param: FilterByName) {
+  protected filter(param: FilterByKey) {
     const isCaseSensitive = param.isCaseSensitive || false;
     return {
       [param.key]: {
@@ -7,6 +11,30 @@ class BaseFilter {
         $options: isCaseSensitive ? "" : "i",
       },
     };
+  }
+
+  protected handleSorter(
+    sortKey: string[],
+    sortBy: string | undefined,
+    orderBy: string | undefined,
+  ): Sorter {
+    const sorter: Sorter = {
+      sort: "createdAt",
+      order: "asc",
+    };
+
+    if (sortBy && this.isSafe(sortBy)) {
+      const validSortKey = baseSortKey.concat(sortKey);
+      if (validSortKey.includes(sortBy)) {
+        sorter.sort = toCamelCase(sortBy);
+      }
+    }
+
+    if (orderBy && ["asc", "desc"].includes(orderBy.toLowerCase())) {
+      sorter.order = orderBy.toLowerCase() as OrderBy;
+    }
+
+    return sorter;
   }
 
   protected isSafe(input: string | undefined): boolean {
@@ -52,7 +80,7 @@ class BaseFilter {
   }
 }
 
-interface FilterByName {
+interface FilterByKey {
   key: string;
   value: string | undefined;
   isCaseSensitive?: boolean;

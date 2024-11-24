@@ -1,3 +1,5 @@
+import { FilterQuery } from "mongoose";
+
 export type Response<T = unknown> = {
   success: boolean;
   statusCode: number;
@@ -39,3 +41,12 @@ export type Timestamps = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type OrderBy = "asc" | "desc";
+
+export type Sorter = {
+  sort: string;
+  order: OrderBy;
+};
+
+export type DataFilter<T = unknown> = [FilterQuery<T>, Sorter | null];

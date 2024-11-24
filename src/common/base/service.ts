@@ -1,4 +1,5 @@
-import { Pagination, ServiceError, StatusCodes } from "@types";
+import { orderByMap } from "@consts";
+import { DataFilter, Pagination, ServiceError, StatusCodes } from "@types";
 import { Document, Model, FilterQuery, UpdateQuery } from "mongoose";
 
 class BaseService<T extends Document> {
@@ -18,15 +19,20 @@ class BaseService<T extends Document> {
   }
 
   protected async find(
-    filter: FilterQuery<T> = {},
+    filter: DataFilter<T> = [{}, null],
     paginator?: Pagination,
   ): Promise<T[] | null> {
     try {
-      const query = this.model.find(filter);
+      const query = this.model.find(filter[0]);
       if (paginator) {
         query
           .limit(paginator.limit)
           .skip(paginator.limit * (paginator.page - 1));
+      }
+
+      const sorter = filter[1];
+      if (sorter) {
+        query.sort({ [sorter.sort]: orderByMap[sorter.order] });
       }
 
       return await query.exec();
@@ -35,9 +41,9 @@ class BaseService<T extends Document> {
     }
   }
 
-  public async count(filter: FilterQuery<T> = {}): Promise<number | null> {
+  public async count(filter: DataFilter<T>): Promise<number | null> {
     try {
-      return await this.model.find(filter).countDocuments();
+      return await this.model.find(filter[0]).countDocuments();
     } catch (error) {
       return this.handleError(error);
     }

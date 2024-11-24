@@ -13,3 +13,10 @@ export const baseErrorRes = Object.freeze({
   message: "Error",
   errors: [],
 });
+
+export const orderByMap = Object.freeze({
+  asc: 1,
+  desc: -1,
+});
+
+export const baseSortKey = ["created_at", "updated_at"];

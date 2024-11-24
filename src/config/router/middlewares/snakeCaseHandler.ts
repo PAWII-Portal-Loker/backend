@@ -1,4 +1,4 @@
-import { toSnakeCase } from "@utils/caseConvert";
+import { ObjToSnakeCase } from "@utils/caseConvert";
 import { NextFunction, Request, Response } from "express";
 
 export function snakeCaseHandler() {
@@ -6,7 +6,7 @@ export function snakeCaseHandler() {
     const originalSend = res.send.bind(res);
 
     res.send = (body: unknown): Response => {
-      const snakeCasedBody = toSnakeCase(JSON.parse(body as string));
+      const snakeCasedBody = ObjToSnakeCase(JSON.parse(body as string));
       return originalSend(JSON.stringify(snakeCasedBody));
     };
 
