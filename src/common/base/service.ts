@@ -32,7 +32,9 @@ class BaseService<T extends Document> {
 
       const sorter = filter.sorter;
       if (sorter) {
-        query.sort({ [sorter.sort]: orderByMap[sorter.order] });
+        query
+          .sort({ [sorter.sort]: orderByMap[sorter.order] })
+          .collation({ locale: "en", caseLevel: true });
       }
 
       return await query.exec();
