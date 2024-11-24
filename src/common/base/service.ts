@@ -19,18 +19,18 @@ class BaseService<T extends Document> {
   }
 
   protected async find(
-    filter: DataFilter<T> = [{}, null],
+    filter: DataFilter<T> = { query: {}, sorter: null },
     paginator?: Pagination,
   ): Promise<T[] | null> {
     try {
-      const query = this.model.find(filter[0]);
+      const query = this.model.find(filter.query);
       if (paginator) {
         query
           .limit(paginator.limit)
           .skip(paginator.limit * (paginator.page - 1));
       }
 
-      const sorter = filter[1];
+      const sorter = filter.sorter;
       if (sorter) {
         query.sort({ [sorter.sort]: orderByMap[sorter.order] });
       }
@@ -43,7 +43,7 @@ class BaseService<T extends Document> {
 
   public async count(filter: DataFilter<T>): Promise<number | null> {
     try {
-      return await this.model.find(filter[0]).countDocuments();
+      return await this.model.find(filter.query).countDocuments();
     } catch (error) {
       return this.handleError(error);
     }

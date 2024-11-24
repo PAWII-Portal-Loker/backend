@@ -4,15 +4,15 @@ import { UserGetDto } from "@user/dtos/user/userGet.dto";
 
 class UserFilter extends BaseFilter {
   public handleFilter(reqParam: UserGetDto): DataFilter<UserGetDto> {
-    const filters = {};
+    const query = {};
 
-    this.safelyAssign(filters, "name", reqParam.name);
-    this.safelyAssign(filters, "email", reqParam.email);
+    this.safelyAssign(query, "name", reqParam.name);
+    this.safelyAssign(query, "email", reqParam.email);
 
     const sortKey = ["name", "email"];
     const sorter = this.handleSorter(sortKey, reqParam?.sort, reqParam?.order);
 
-    return [filters, sorter];
+    return { query, sorter };
   }
 }
 

@@ -49,4 +49,7 @@ export type Sorter = {
   order: OrderBy;
 };
 
-export type DataFilter<T = unknown> = [FilterQuery<T>, Sorter | null];
+export type DataFilter<T = unknown> = {
+  query: FilterQuery<T>;
+  sorter: Sorter | null;
+};
