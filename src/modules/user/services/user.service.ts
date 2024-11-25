@@ -1,4 +1,4 @@
-import BaseService from "@base/service";
+import BaseMongoService from "@base/mongoService";
 import { DataFilter, Pagination, ServiceError } from "@types";
 import { UserDto } from "@user/dtos/user/user.dto";
 import { UserModel } from "@user/models/user.model";
@@ -9,7 +9,7 @@ import {
 } from "@utils/statusCodes";
 import { isValidObjectId } from "mongoose";
 
-class UserService extends BaseService<UserDto> {
+class UserService extends BaseMongoService<UserDto> {
   constructor() {
     super(UserModel);
   }
@@ -53,6 +53,21 @@ class UserService extends BaseService<UserDto> {
     }
 
     return newUser;
+  }
+
+  public async validateLogin(
+    data: Partial<UserDto>,
+  ): Promise<UserDto | ServiceError> {
+    const user = await this.findOne({ email: data.email });
+    if (!user) {
+      return this.throwError("User not found", StatusNotFound);
+    }
+
+    if (user.password !== data.password) {
+      return this.throwError("Invalid password", StatusBadRequest);
+    }
+
+    return user;
   }
 }
 

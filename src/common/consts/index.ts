@@ -20,3 +20,5 @@ export const orderByMap = Object.freeze({
 });
 
 export const baseSortKey = ["created_at", "updated_at"];
+
+export const days_7 = 60 * 60 * 24 * 7;

@@ -112,7 +112,7 @@ class BaseController extends BasePagination {
     res: ExpressResponse,
     data: unknown | ServiceError,
   ): data is ServiceError {
-    const isError = (data as ServiceError).error !== undefined;
+    const isError = (data as ServiceError)?.error !== undefined;
 
     if (isError) {
       this.handleError(res, data as ServiceError);
