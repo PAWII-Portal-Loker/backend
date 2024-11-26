@@ -99,7 +99,10 @@ class BaseController extends BasePagination {
       .json(Object.assign({}, baseSuccessRes, data, { pagination }));
   }
 
-  protected handleError(res: ExpressResponse, data: ServiceError): void {
+  protected handleError(
+    res: ExpressResponse,
+    data: Partial<ServiceError>,
+  ): void {
     res.status(data.statusCode ?? baseErrorRes.statusCode).json(
       Object.assign({}, baseErrorRes, {
         statusCode: data.statusCode,

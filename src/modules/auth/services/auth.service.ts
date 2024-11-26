@@ -1,26 +1,21 @@
 import { ServiceError } from "@types";
-import { StatusBadRequest } from "@utils/statusCodes";
 import Redis from "ioredis";
-import { isValidObjectId } from "mongoose";
 import { SignInDto } from "../dtos/auth/signIn.dto";
-import { TokenDto, TokenPayloadDto } from "../dtos/auth/token.dto";
-import jwt from "jsonwebtoken";
+import { TokenDto } from "../dtos/auth/token.dto";
 import moment from "moment";
-import env from "@utils/env";
 import { days_7 } from "@consts";
-import BaseService from "@base/service";
 import {
   decodeToken,
   generateAccessToken,
   generateRefreshToken,
 } from "@utils/jwtToken";
+import { SignOutDto } from "../dtos/auth/signOut.dto";
+import RedisService from "@base/redisService";
+import { IsLoginDto } from "../dtos/auth/isLogin.dto";
 
-class AuthService extends BaseService {
-  private db: Redis;
-
+class AuthService extends RedisService {
   constructor(redisClient: Redis) {
-    super();
-    this.db = redisClient;
+    super(redisClient);
   }
 
   public async signIn(
@@ -33,34 +28,35 @@ class AuthService extends BaseService {
     };
     const newAccessToken = generateAccessToken(tokenPayload);
 
-    const storedToken = await this.db.get(loginKey);
-    if (!storedToken) {
+    const generateAndSetRefreshToken = () => {
       const newRefreshToken = generateRefreshToken(tokenPayload);
-      this.db.set(loginKey, newRefreshToken, "EX", days_7);
+      this.set(loginKey, newRefreshToken, days_7);
+      return newRefreshToken;
+    };
 
+    // get stored refresh token
+    const storedToken = await this.get(loginKey);
+    if (!storedToken) {
       return {
         accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
+        refreshToken: generateAndSetRefreshToken(),
       };
     }
 
-    // check if refresh token not expired
+    // decode refresh token
     const decodedToken = decodeToken(storedToken, "refresh");
     if (!decodedToken) {
-      const newRefreshToken = generateRefreshToken(tokenPayload);
-      this.db.set(loginKey, newRefreshToken, "EX", days_7);
-
       return {
         accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
+        refreshToken: generateAndSetRefreshToken(),
       };
     }
 
-    if (moment(moment()).isAfter(decodedToken.exp)) {
-      const newRefreshToken = generateRefreshToken(tokenPayload);
+    // check if refresh token expired
+    if (moment(moment().toDate()).isAfter(decodedToken.exp)) {
       return {
         accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
+        refreshToken: generateAndSetRefreshToken(),
       };
     }
 
@@ -70,19 +66,24 @@ class AuthService extends BaseService {
     };
   }
 
-  // public async create(data: Partial<XxxxDto>): Promise<XxxxDto | ServiceError> {
-  //   const xxxxx = await this.findOne({ email: data.email });
-  //   if (xxxxx) {
-  //     return this.throwError("xxxxx already exists", StatusConflict);
-  //   }
+  public signOut(signData: Partial<SignOutDto>): boolean {
+    const loginKey = `login:${signData.userId}:${signData.deviceId}`;
+    this.asyncDel(loginKey);
 
-  //   const newxxxxx = await this.create(data);
-  //   if (!newxxxxx) {
-  //     return this.throwError("Error creating xxxxx", StatusBadRequest);
-  //   }
+    return true;
+  }
 
-  //   return newxxxxx;
-  // }
+  public async isLogin(
+    signData: Partial<IsLoginDto>,
+  ): Promise<boolean | ServiceError> {
+    const loginKey = `login:${signData.userId}:${signData.deviceId}`;
+    const storedToken = await this.get(loginKey);
+    if (storedToken === signData.refreshToken) {
+      return true;
+    }
+
+    return false;
+  }
 }
 
 export default AuthService;

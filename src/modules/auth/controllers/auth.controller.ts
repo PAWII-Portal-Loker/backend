@@ -2,33 +2,40 @@ import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import { SignInDto, SignInSchema } from "../dtos/auth/signIn.dto";
 import AuthService from "../services/auth.service";
-import UserService from "@user/services/user.service";
+import { SignOutSchema } from "../dtos/auth/signOut.dto";
+import UserSubservice from "@user/services/user.subservice";
+import { StatusNotFound } from "@utils/statusCodes";
+import { IsLoginSchema } from "../dtos/auth/isLogin.dto";
 
 class AuthController extends BaseController {
-  private userService = new UserService();
+  private userSubservice = new UserSubservice();
   private authService: AuthService;
 
   constructor() {
     super();
     this.authService = new AuthService(this.redisDatabase.getClient());
-    this.SignIn();
+    this.signIn();
+    this.signOut();
+    this.isLogin();
   }
 
-  private async SignIn() {
+  private async signIn() {
     this.router.post("/v1/auth/signin", async (req: Request, res: Response) => {
       const reqBody = this.validate(req, res, SignInSchema);
       if (!reqBody) {
         return;
       }
 
-      const user = await this.userService.validateLogin(reqBody);
+      const user = await this.userSubservice.validateLogin(reqBody);
       if (this.isServiceError(res, user)) {
         return;
       }
 
+      // passing roleId when role system is implemented
       const signData: Partial<SignInDto> = {
         userId: user._id as string,
-        deviceId: reqBody.deviceId ?? "unknown",
+        // TODO: strict validation untuk device-id
+        deviceId: res.getHeader("device-id") as string,
         refreshToken: res.getHeader("x-refresh-token") as string,
       };
 
@@ -37,77 +44,77 @@ class AuthController extends BaseController {
         return;
       }
 
-      // return this.handleSuccess(res, {
-      //   message: "Success signing in",
-      //   data: user,
-      // });
+      return this.handleSuccess(res, {
+        message: "Success signing in",
+        data: signIn,
+      });
     });
   }
 
-  // private async getAllXxxxx() {
-  //   this.router.get("/v1/xxxxs", async (req: Request, res: Response) => {
-  //     const reqParam = this.validateQuery(req, res, UserGetSchema);
-  //     if (!reqParam) {
-  //       return;
-  //     }
+  private async signOut() {
+    this.router.post(
+      "/v1/auth/signout",
+      async (req: Request, res: Response) => {
+        const reqBody = this.validate(req, res, SignOutSchema);
+        if (!reqBody) {
+          return;
+        }
 
-  //     const paginator = this.paginate(reqParam.page, reqParam.limit);
+        const isUserExists = await this.userSubservice.isUserExists({
+          _id: reqBody.userId,
+        });
+        if (this.isServiceError(res, isUserExists)) {
+          return;
+        }
+        if (!isUserExists) {
+          return this.handleError(res, {
+            statusCode: StatusNotFound,
+            message: "User not found",
+          });
+        }
 
-  //     const filters = this.xxxxFilter.handleFilter(reqParam);
-  //     const [users, count] = await Promise.all([
-  //       this.xxxxService.getAllUsers(filters, paginator),
-  //       this.xxxxService.count(filters),
-  //     ]);
-  //     if (this.isServiceError(res, users)) {
-  //       return;
-  //     }
+        const signOut = this.authService.signOut(reqBody);
+        return this.handleSuccess(res, {
+          message: "Success signing in",
+          data: signOut,
+        });
+      },
+    );
+  }
 
-  //     return this.handleSuccess(
-  //       res,
-  //       {
-  //         message: "Success getting xxxx",
-  //         data: users,
-  //       },
-  //       this.handlePagination(paginator, count),
-  //     );
-  //   });
-  // }
+  private async isLogin() {
+    this.router.post(
+      "/v1/auth/is-login",
+      async (req: Request, res: Response) => {
+        const reqBody = this.validate(req, res, IsLoginSchema);
+        if (!reqBody) {
+          return;
+        }
 
-  // private async getById() {
-  //   this.router.get("/v1/xxxx/:id", async (req: Request, res: Response) => {
-  //     const userId = req.params.id;
-  //     const user = await this.xxxxService.getUserById(userId);
+        const isUserExists = await this.userSubservice.isUserExists({
+          _id: reqBody.userId,
+        });
+        if (this.isServiceError(res, isUserExists)) {
+          return;
+        }
+        if (!isUserExists) {
+          return this.handleError(res, {
+            statusCode: StatusNotFound,
+            message: "User not found",
+          });
+        }
 
-  //     if (this.isServiceError(res, user)) {
-  //       return;
-  //     }
-
-  //     return this.handleSuccess(res, {
-  //       message: "Success getting xxxx",
-  //       data: user,
-  //     });
-  //   });
-  // }
-
-  // private async create() {
-  //   this.router.post("/v1/xxxx", async (req: Request, res: Response) => {
-  //     const reqBody = this.validate<xxxxCreateDto>(req, res, UserCreateSchema);
-  //     if (!reqBody) {
-  //       return;
-  //     }
-
-  //     const newXxxx = await this.xxxxService.createXxxx(reqBody);
-  //     if (this.isServiceError(res, newXxxx)) {
-  //       return;
-  //     }
-
-  //     return this.handleSuccess(res, {
-  //       statusCode: StatusCreated,
-  //       message: "Success creating xxxx",
-  //       data: newXxxx,
-  //     });
-  //   });
-  // }
+        const isLogin = this.authService.isLogin(reqBody);
+        return this.handleSuccess(res, {
+          message: "Success signing in",
+          data: {
+            isLogin,
+            // TODO: return role when role system is implemented
+          },
+        });
+      },
+    );
+  }
 }
 
 export default AuthController;

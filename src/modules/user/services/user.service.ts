@@ -54,21 +54,6 @@ class UserService extends BaseMongoService<UserDto> {
 
     return newUser;
   }
-
-  public async validateLogin(
-    data: Partial<UserDto>,
-  ): Promise<UserDto | ServiceError> {
-    const user = await this.findOne({ email: data.email });
-    if (!user) {
-      return this.throwError("User not found", StatusNotFound);
-    }
-
-    if (user.password !== data.password) {
-      return this.throwError("Invalid password", StatusBadRequest);
-    }
-
-    return user;
-  }
 }
 
 export default UserService;
