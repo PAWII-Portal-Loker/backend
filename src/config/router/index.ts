@@ -3,6 +3,7 @@ import env from "@utils/env";
 import { snakeCaseHandler } from "./middlewares/snakeCaseHandler";
 import { jsonParseHandler } from "./middlewares/jsonParseHandler";
 import { corsHandler } from "./middlewares/corsHandler";
+import { requiredHeaders } from "./middlewares/requiredHeaders";
 
 class Router {
   app: express.Application;
@@ -11,6 +12,7 @@ class Router {
   constructor() {
     this.app = express();
 
+    this.app.use(requiredHeaders());
     this.app.use(snakeCaseHandler());
     this.app.use(jsonParseHandler());
     this.app.use(express.urlencoded({ extended: true }));
