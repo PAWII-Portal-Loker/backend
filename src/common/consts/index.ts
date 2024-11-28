@@ -1,4 +1,6 @@
 import { StatusOk } from "@utils/statusCodes";
+import { shouldBeNumber } from "@utils/yup";
+import * as Yup from "yup";
 
 export const baseSuccessRes = Object.freeze({
   success: true,
@@ -25,3 +27,14 @@ export const days_7 = 60 * 60 * 24 * 7;
 
 export const TOKEN_EXPIRED = "TokenExpiredError";
 export const TOKEN_INVALID = "JsonWebTokenError";
+
+export const paginatorSchema = {
+  page: shouldBeNumber().min(1, "page must be at least 1"),
+  limit: shouldBeNumber()
+    .min(1, "limit must be at least 1")
+    .max(100, "limit must be at most 100"),
+};
+export const sorterSchema = {
+  sort: Yup.string().optional(),
+  order: Yup.string().oneOf(["ASC", "DESC", "asc", "desc"]).optional(),
+};

@@ -60,3 +60,13 @@ export type RequiredHeaders = {
   accessToken: string;
   refreshToken: string;
 };
+
+export type PaginatorDto = {
+  page?: number;
+  limit?: number;
+};
+
+export type SorterDto = {
+  sort?: string;
+  order?: string;
+};

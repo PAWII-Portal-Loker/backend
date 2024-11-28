@@ -8,7 +8,8 @@
     "lint": "bunx eslint .",
     "dev": "nodemon -r tsconfig-paths --exec bunx tsx src/app.ts",
     "build": "tsc --project tsconfig.prod.json && tsc-alias -p tsconfig.prod.json",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "seed": "bunx tsx src/seeder.ts"
   },
   "keywords": [],
   "author": "Fanesz",

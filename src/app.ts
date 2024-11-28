@@ -1,9 +1,10 @@
 import MongoDatabase from "@config/databases/mongo";
 import RedisDatabase from "@config/databases/redis";
 import Router from "@config/router";
-import UserController from "@user/controllers/user.controller";
 import env from "@utils/env";
+import UserController from "@user/controllers/user.controller";
 import AuthController from "./modules/auth/controllers/auth.controller";
+import RoleController from "./modules/role/controllers/role.controller";
 
 new MongoDatabase({
   dbHost: env.get("MONGO_DB_HOST"),
@@ -18,6 +19,7 @@ RedisDatabase.getInstance().initialize({
 
 const router = new Router();
 
+router.app.use("/", new RoleController().getRouter());
 router.app.use("/", new UserController().getRouter());
 router.app.use("/", new AuthController().getRouter());
 
