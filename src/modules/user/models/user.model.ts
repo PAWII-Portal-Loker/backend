@@ -1,4 +1,4 @@
-import { UserDto } from "@user/dtos/user/user.dto";
+import { UserDto } from "@user/dtos/user.dto";
 import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema<UserDto>(

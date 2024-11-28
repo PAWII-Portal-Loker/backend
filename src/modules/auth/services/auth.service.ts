@@ -1,7 +1,7 @@
 import { ServiceError } from "@types";
 import Redis from "ioredis";
-import { SignInDto } from "../dtos/auth/signIn.dto";
-import { TokenDto } from "../dtos/auth/token.dto";
+import { SignInDto } from "../dtos/signIn.dto";
+import { TokenDto } from "../dtos/token.dto";
 import { days_7 } from "@consts";
 import {
   decodeToken,
@@ -9,9 +9,9 @@ import {
   generateRefreshToken,
   isTokenExpired,
 } from "@utils/jwtToken";
-import { SignOutDto } from "../dtos/auth/signOut.dto";
+import { SignOutDto } from "../dtos/signOut.dto";
 import RedisService from "@base/redisService";
-import { IsLoginDto } from "../dtos/auth/isLogin.dto";
+import { IsLoginDto } from "../dtos/isLogin.dto";
 
 class AuthService extends RedisService {
   constructor(redisClient: Redis) {

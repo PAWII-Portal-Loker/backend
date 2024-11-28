@@ -1,6 +1,6 @@
 import BaseMongoService from "@base/mongoService";
 import { DataFilter, Pagination, ServiceError } from "@types";
-import { UserDto } from "@user/dtos/user/user.dto";
+import { UserDto } from "@user/dtos/user.dto";
 import { UserModel } from "@user/models/user.model";
 import {
   StatusBadRequest,

@@ -1,13 +1,10 @@
 import { Request, Response } from "express";
-import {
-  UserCreateDto,
-  UserCreateSchema,
-} from "@user/dtos/user/userCreate.dto";
+import { UserCreateDto, UserCreateSchema } from "@user/dtos/userCreate.dto";
 import UserService from "@user/services/user.service";
 import BaseController from "@base/controller";
 import { StatusCreated } from "@utils/statusCodes";
 import UserFilter from "@user/filters/user.filter";
-import { UserGetSchema } from "@user/dtos/user/userGet.dto";
+import { UserGetSchema } from "@user/dtos/userGet.dto";
 
 class UserController extends BaseController {
   private userService = new UserService();

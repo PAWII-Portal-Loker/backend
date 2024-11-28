@@ -1,4 +1,4 @@
-import { UserDto } from "@user/dtos/user/user.dto";
+import { UserDto } from "@user/dtos/user.dto";
 import UserService from "./user.service";
 import { ServiceError } from "@types";
 import { StatusBadRequest, StatusNotFound } from "@utils/statusCodes";

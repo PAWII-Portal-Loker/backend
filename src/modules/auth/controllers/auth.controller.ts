@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import BaseController from "@base/controller";
-import { SignInDto, SignInSchema } from "../dtos/auth/signIn.dto";
+import { SignInDto, SignInSchema } from "../dtos/signIn.dto";
 import AuthService from "../services/auth.service";
 import UserSubservice from "@user/services/user.subservice";
 import { StatusNotFound } from "@utils/statusCodes";

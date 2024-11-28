@@ -1,5 +1,5 @@
 import moment from "moment";
-import { TokenPayloadDto } from "src/modules/auth/dtos/auth/token.dto";
+import { TokenPayloadDto } from "src/modules/auth/dtos/token.dto";
 import jwt from "jsonwebtoken";
 import env from "./env";
 import { TOKEN_EXPIRED, TOKEN_INVALID } from "@consts";
