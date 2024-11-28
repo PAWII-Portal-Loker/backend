@@ -29,7 +29,7 @@ class BaseController extends BasePagination {
   }
 
   protected get mustAuthorized(): RequestHandler {
-    return this.authMiddleware.requireAuth.bind(this.authMiddleware);
+    return this.authMiddleware.mustAuthorized.bind(this.authMiddleware);
   }
 
   protected validate<T>(
@@ -123,10 +123,6 @@ class BaseController extends BasePagination {
     }
 
     return isError;
-  }
-
-  protected getHeader(res: ExpressResponse, headerKey: string): string {
-    return res.getHeader(headerKey) as string;
   }
 }
 

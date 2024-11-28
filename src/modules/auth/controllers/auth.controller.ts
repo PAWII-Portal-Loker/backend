@@ -4,7 +4,6 @@ import { SignInDto, SignInSchema } from "../dtos/auth/signIn.dto";
 import AuthService from "../services/auth.service";
 import UserSubservice from "@user/services/user.subservice";
 import { StatusNotFound } from "@utils/statusCodes";
-import { IsLoginSchema } from "../dtos/auth/isLogin.dto";
 
 class AuthController extends BaseController {
   private userSubservice = new UserSubservice();
@@ -34,7 +33,7 @@ class AuthController extends BaseController {
       const signData: Partial<SignInDto> = {
         userId: user._id as string,
         deviceId: res.locals.deviceId,
-        refreshToken: this.getHeader(res, "x-refresh-token"),
+        refreshToken: res.getHeader("x-refresh-token") as string,
       };
 
       const signIn = await this.authService.signIn(signData);
@@ -53,43 +52,12 @@ class AuthController extends BaseController {
   }
 
   private async signOut() {
-    this.router.post("/v1/auth/signout", async (_: Request, res: Response) => {
-      const isUserExists = await this.userSubservice.isUserExists({
-        _id: res.locals.userId,
-      });
-      if (this.isServiceError(res, isUserExists)) {
-        return;
-      }
-      if (!isUserExists) {
-        return this.handleError(res, {
-          statusCode: StatusNotFound,
-          message: "User not found",
-        });
-      }
-
-      const signOut = this.authService.signOut({
-        userId: res.locals.userId,
-        deviceId: res.locals.deviceId,
-      });
-
-      return this.handleSuccess(res, {
-        message: "Success signing in",
-        data: signOut,
-      });
-    });
-  }
-
-  private async isLogin() {
     this.router.post(
-      "/v1/auth/is-login",
-      async (req: Request, res: Response) => {
-        const reqBody = this.validate(req, res, IsLoginSchema);
-        if (!reqBody) {
-          return;
-        }
-
+      "/v1/auth/signout",
+      this.mustAuthorized,
+      async (_: Request, res: Response) => {
         const isUserExists = await this.userSubservice.isUserExists({
-          _id: reqBody.userId,
+          _id: res.getLocals("userId"),
         });
         if (this.isServiceError(res, isUserExists)) {
           return;
@@ -101,7 +69,42 @@ class AuthController extends BaseController {
           });
         }
 
-        const isLogin = this.authService.isLogin(reqBody);
+        const signOut = this.authService.signOut({
+          userId: res.getLocals("userId"),
+          deviceId: res.getLocals("deviceId"),
+        });
+
+        return this.handleSuccess(res, {
+          message: "Success signing in",
+          data: signOut,
+        });
+      },
+    );
+  }
+
+  private async isLogin() {
+    this.router.get(
+      "/v1/auth/is-login",
+      this.mustAuthorized,
+      async (_: Request, res: Response) => {
+        const isUserExists = await this.userSubservice.isUserExists({
+          _id: res.getLocals("userId"),
+        });
+        if (this.isServiceError(res, isUserExists)) {
+          return;
+        }
+        if (!isUserExists) {
+          return this.handleError(res, {
+            statusCode: StatusNotFound,
+            message: "User not found",
+          });
+        }
+
+        const isLogin = await this.authService.isLogin({
+          userId: res.getLocals("userId"),
+          deviceId: res.getLocals("deviceId"),
+          refreshToken: res.getHeader("x-refresh-token") as string,
+        });
         return this.handleSuccess(res, {
           message: "Success signing in",
           data: {

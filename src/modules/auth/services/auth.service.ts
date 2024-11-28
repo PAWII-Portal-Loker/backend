@@ -68,7 +68,7 @@ class AuthService extends RedisService {
 
   public signOut(signData: Partial<SignOutDto>): boolean {
     const loginKey = `auth:${signData.userId}:${signData.deviceId}`;
-    this.asyncDel(loginKey);
+    this.del(loginKey);
 
     return true;
   }

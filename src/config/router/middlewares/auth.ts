@@ -16,7 +16,7 @@ class AuthMiddleware extends RedisService {
     super(redisClient);
   }
 
-  async requireAuth(req: Request, res: Response, next: NextFunction) {
+  async mustAuthorized(req: Request, res: Response, next: NextFunction) {
     try {
       // validate required headers
       const headers = this.validateHeaders(req, res);
