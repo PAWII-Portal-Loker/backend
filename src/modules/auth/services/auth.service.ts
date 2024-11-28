@@ -2,12 +2,12 @@ import { ServiceError } from "@types";
 import Redis from "ioredis";
 import { SignInDto } from "../dtos/auth/signIn.dto";
 import { TokenDto } from "../dtos/auth/token.dto";
-import moment from "moment";
 import { days_7 } from "@consts";
 import {
   decodeToken,
   generateAccessToken,
   generateRefreshToken,
+  isTokenExpired,
 } from "@utils/jwtToken";
 import { SignOutDto } from "../dtos/auth/signOut.dto";
 import RedisService from "@base/redisService";
@@ -21,7 +21,7 @@ class AuthService extends RedisService {
   public async signIn(
     signData: Partial<SignInDto>,
   ): Promise<TokenDto | ServiceError> {
-    const loginKey = `login:${signData.userId}:${signData.deviceId}`;
+    const loginKey = `auth:${signData.userId}:${signData.deviceId}`;
     const tokenPayload = {
       userId: signData.userId ?? "",
       roleId: "roleIdNotImplementedYet", // TODO: implement role system
@@ -44,8 +44,8 @@ class AuthService extends RedisService {
     }
 
     // decode refresh token
-    const decodedToken = decodeToken(storedToken, "refresh");
-    if (!decodedToken) {
+    const decodedPayload = decodeToken("refresh", storedToken);
+    if (!decodedPayload?.token) {
       return {
         accessToken: newAccessToken,
         refreshToken: generateAndSetRefreshToken(),
@@ -53,7 +53,7 @@ class AuthService extends RedisService {
     }
 
     // check if refresh token expired
-    if (moment(moment().toDate()).isAfter(decodedToken.exp)) {
+    if (isTokenExpired(decodedPayload?.token?.exp)) {
       return {
         accessToken: newAccessToken,
         refreshToken: generateAndSetRefreshToken(),
@@ -67,7 +67,7 @@ class AuthService extends RedisService {
   }
 
   public signOut(signData: Partial<SignOutDto>): boolean {
-    const loginKey = `login:${signData.userId}:${signData.deviceId}`;
+    const loginKey = `auth:${signData.userId}:${signData.deviceId}`;
     this.asyncDel(loginKey);
 
     return true;
@@ -76,7 +76,7 @@ class AuthService extends RedisService {
   public async isLogin(
     signData: Partial<IsLoginDto>,
   ): Promise<boolean | ServiceError> {
-    const loginKey = `login:${signData.userId}:${signData.deviceId}`;
+    const loginKey = `auth:${signData.userId}:${signData.deviceId}`;
     const storedToken = await this.get(loginKey);
     if (storedToken === signData.refreshToken) {
       return true;

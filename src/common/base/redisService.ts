@@ -43,7 +43,7 @@ class RedisService extends BaseService {
 
   protected asyncDel(key: RedisKey) {
     try {
-      this.db.del(key);
+      return this.db.del(key);
     } catch (error) {
       return this.handleError(error);
     }

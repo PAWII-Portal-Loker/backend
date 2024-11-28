@@ -4,7 +4,7 @@ export const baseSuccessRes = Object.freeze({
   success: true,
   statusCode: StatusOk,
   message: "Success",
-  data: {},
+  data: null,
 });
 
 export const baseErrorRes = Object.freeze({
@@ -22,3 +22,6 @@ export const orderByMap = Object.freeze({
 export const baseSortKey = ["created_at", "updated_at"];
 
 export const days_7 = 60 * 60 * 24 * 7;
+
+export const TOKEN_EXPIRED = "TokenExpiredError";
+export const TOKEN_INVALID = "JsonWebTokenError";

@@ -23,32 +23,36 @@ class UserController extends BaseController {
   // TODO: improve query params by add sortBy and orderBy
   // TODO: testing middleware
   private async getAllUsers() {
-    this.router.get("/v1/users", async (req: Request, res: Response) => {
-      const reqParam = this.validateQuery(req, res, UserGetSchema);
-      if (!reqParam) {
-        return;
-      }
+    this.router.get(
+      "/v1/users",
+      this.mustAuthorized,
+      async (req: Request, res: Response) => {
+        const reqParam = this.validateQuery(req, res, UserGetSchema);
+        if (!reqParam) {
+          return;
+        }
 
-      const paginator = this.paginate(reqParam.page, reqParam.limit);
+        const paginator = this.paginate(reqParam.page, reqParam.limit);
 
-      const filters = this.userFilter.handleFilter(reqParam);
-      const [users, count] = await Promise.all([
-        this.userService.getAllUsers(filters, paginator),
-        this.userService.count(filters),
-      ]);
-      if (this.isServiceError(res, users)) {
-        return;
-      }
+        const filters = this.userFilter.handleFilter(reqParam);
+        const [users, count] = await Promise.all([
+          this.userService.getAllUsers(filters, paginator),
+          this.userService.count(filters),
+        ]);
+        if (this.isServiceError(res, users)) {
+          return;
+        }
 
-      return this.handleSuccess(
-        res,
-        {
-          message: "Success getting users",
-          data: users,
-        },
-        this.handlePagination(paginator, count),
-      );
-    });
+        return this.handleSuccess(
+          res,
+          {
+            message: "Success getting users",
+            data: users,
+          },
+          this.handlePagination(paginator, count),
+        );
+      },
+    );
   }
 
   private async getUserById() {

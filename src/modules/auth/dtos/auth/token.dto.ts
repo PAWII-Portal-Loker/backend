@@ -6,6 +6,6 @@ export interface TokenDto {
 export interface TokenPayloadDto {
   userId: string;
   roleId: string;
-  iat: Date;
-  exp: Date;
+  iat: number;
+  exp: number;
 }

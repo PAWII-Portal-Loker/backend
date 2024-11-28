@@ -11,16 +11,17 @@ import * as Yup from "yup";
 import BasePagination from "./pagination";
 import { baseErrorRes, baseSuccessRes } from "@consts";
 import AuthMiddleware from "@config/router/middlewares/auth";
+import Redis from "ioredis";
 
 class BaseController extends BasePagination {
   protected router = Router();
-  protected redisDatabase: RedisDatabase;
+  protected redisClient: Redis;
   protected authMiddleware: AuthMiddleware;
 
   constructor() {
     super();
-    this.redisDatabase = RedisDatabase.getInstance();
-    this.authMiddleware = new AuthMiddleware(this.redisDatabase);
+    this.redisClient = RedisDatabase.getInstance().getClient();
+    this.authMiddleware = new AuthMiddleware(this.redisClient);
   }
 
   public getRouter(): Router {
@@ -28,7 +29,7 @@ class BaseController extends BasePagination {
   }
 
   protected get mustAuthorized(): RequestHandler {
-    return this.authMiddleware.refreshAccessToken.bind(this.authMiddleware);
+    return this.authMiddleware.requireAuth.bind(this.authMiddleware);
   }
 
   protected validate<T>(
@@ -122,6 +123,10 @@ class BaseController extends BasePagination {
     }
 
     return isError;
+  }
+
+  protected getHeader(res: ExpressResponse, headerKey: string): string {
+    return res.getHeader(headerKey) as string;
   }
 }
 

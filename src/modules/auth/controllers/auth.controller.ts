@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import { SignInDto, SignInSchema } from "../dtos/auth/signIn.dto";
 import AuthService from "../services/auth.service";
-import { SignOutSchema } from "../dtos/auth/signOut.dto";
 import UserSubservice from "@user/services/user.subservice";
 import { StatusNotFound } from "@utils/statusCodes";
 import { IsLoginSchema } from "../dtos/auth/isLogin.dto";
@@ -13,7 +12,7 @@ class AuthController extends BaseController {
 
   constructor() {
     super();
-    this.authService = new AuthService(this.redisDatabase.getClient());
+    this.authService = new AuthService(this.redisClient);
     this.signIn();
     this.signOut();
     this.isLogin();
@@ -34,9 +33,8 @@ class AuthController extends BaseController {
       // passing roleId when role system is implemented
       const signData: Partial<SignInDto> = {
         userId: user._id as string,
-        // TODO: strict validation untuk device-id
-        deviceId: res.getHeader("device-id") as string,
-        refreshToken: res.getHeader("x-refresh-token") as string,
+        deviceId: res.locals.deviceId,
+        refreshToken: this.getHeader(res, "x-refresh-token"),
       };
 
       const signIn = await this.authService.signIn(signData);
@@ -44,42 +42,41 @@ class AuthController extends BaseController {
         return;
       }
 
+      res.setHeader("x-access-token", signIn.accessToken);
+      res.setHeader("x-refresh-token", signIn.refreshToken);
+      res.setHeader("x-user-id", user._id as string);
+
       return this.handleSuccess(res, {
         message: "Success signing in",
-        data: signIn,
       });
     });
   }
 
   private async signOut() {
-    this.router.post(
-      "/v1/auth/signout",
-      async (req: Request, res: Response) => {
-        const reqBody = this.validate(req, res, SignOutSchema);
-        if (!reqBody) {
-          return;
-        }
-
-        const isUserExists = await this.userSubservice.isUserExists({
-          _id: reqBody.userId,
+    this.router.post("/v1/auth/signout", async (_: Request, res: Response) => {
+      const isUserExists = await this.userSubservice.isUserExists({
+        _id: this.getHeader(res, "user-id"),
+      });
+      if (this.isServiceError(res, isUserExists)) {
+        return;
+      }
+      if (!isUserExists) {
+        return this.handleError(res, {
+          statusCode: StatusNotFound,
+          message: "User not found",
         });
-        if (this.isServiceError(res, isUserExists)) {
-          return;
-        }
-        if (!isUserExists) {
-          return this.handleError(res, {
-            statusCode: StatusNotFound,
-            message: "User not found",
-          });
-        }
+      }
 
-        const signOut = this.authService.signOut(reqBody);
-        return this.handleSuccess(res, {
-          message: "Success signing in",
-          data: signOut,
-        });
-      },
-    );
+      const signOut = this.authService.signOut({
+        userId: this.getHeader(res, "user-id"),
+        deviceId: this.getHeader(res, "device-id"),
+      });
+
+      return this.handleSuccess(res, {
+        message: "Success signing in",
+        data: signOut,
+      });
+    });
   }
 
   private async isLogin() {

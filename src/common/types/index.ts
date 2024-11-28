@@ -53,3 +53,10 @@ export type DataFilter<T = unknown> = {
   query: FilterQuery<T>;
   sorter: Sorter | null;
 };
+
+export type RequiredHeaders = {
+  userId: string;
+  deviceId: string;
+  accessToken: string;
+  refreshToken: string;
+};

@@ -18,7 +18,6 @@ export const SignInSchema: Yup.Schema<Partial<SignInDto>> = Yup.object({
     .min(6, "password must be at least 6 characters")
     .max(100, "password must be at most 100 characters"),
 
-  deviceId: Yup.string().required("device_id is required"),
   // TODO: specify device_id format
 })
   .noUnknown(true)

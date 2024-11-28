@@ -1,84 +1,242 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { StatusForbidden } from "@utils/statusCodes";
-import env from "@utils/env";
-import RedisDatabase from "@config/databases/redis";
+import { StatusUnauthorized } from "@utils/statusCodes";
+import {
+  decodeToken,
+  generateAccessToken,
+  generateRefreshToken,
+} from "@utils/jwtToken";
+import Redis from "ioredis";
+import RedisService from "@base/redisService";
+import { baseErrorRes, days_7, TOKEN_EXPIRED, TOKEN_INVALID } from "@consts";
+import { RequiredHeaders } from "@types";
+import { isValidObjectId } from "mongoose";
 
-class AuthMiddleware {
-  private redisClient: RedisDatabase;
-
-  constructor(redisClient: RedisDatabase) {
-    this.redisClient = redisClient;
+class AuthMiddleware extends RedisService {
+  constructor(redisClient: Redis) {
+    super(redisClient);
   }
 
-  private generateAccessToken(payload: object): string {
-    return jwt.sign(payload, env.get("ACCESS_TOKEN_SECRET"), {
-      expiresIn: "15m", // 15 minutes
-    });
-  }
-
-  private generateRefreshToken(payload: object): string {
-    return jwt.sign(payload, env.get("REFRESH_TOKEN_SECRET"), {
-      expiresIn: "7d", // 7 days
-    });
-  }
-
-  async refreshAccessToken(req: Request, res: Response, next: NextFunction) {
+  async requireAuth(req: Request, res: Response, next: NextFunction) {
     try {
-      const refreshToken = req.headers["x-refresh-token"] as string;
-
-      if (!refreshToken) {
-        return res.status(401).json({
-          success: false,
-          statusCode: 401,
-          message: "Refresh token is required",
-          errors: [],
-        });
+      // validate required headers
+      const headers = this.validateHeaders(req, res);
+      if (!headers) {
+        return;
       }
 
-      // Verify the refresh token
-      const decoded = jwt.verify(
-        refreshToken,
-        env.get("REFRESH_TOKEN_SECRET"),
-      ) as { userId: string; iat: number };
+      res.setHeader("x-access-token", headers.accessToken);
+      res.setHeader("x-refresh-token", headers.refreshToken);
 
-      // Check Redis for token existence
-      const redisKey = `refreshToken:${decoded.userId}:${refreshToken}`;
-      const redisClient = this.redisClient.getClient();
-      const tokenExists = await redisClient.get(redisKey);
-
-      if (!tokenExists) {
-        return res.status(StatusForbidden).json({
-          success: false,
-          statusCode: StatusForbidden,
-          message: "Invalid or expired refresh token",
-          errors: [],
-        });
+      const accessToken = decodeToken("access", headers.accessToken);
+      // [A1] if access token invalid
+      if (accessToken.err === TOKEN_INVALID) {
+        // console.log("A1");
+        return this.throwUnauthorized(res, "Invalid access token");
       }
 
-      // Generate a new access token
-      const newAccessToken = this.generateAccessToken({
-        userId: decoded.userId,
-      });
+      // [A2] if access token expired
+      if (accessToken.err === TOKEN_EXPIRED) {
+        // console.log("A2");
+        const tokenPayload = {
+          userId: headers.userId ?? "",
+          roleId: "roleIdNotImplementedYet",
+        };
 
-      // Optionally generate a new refresh token and replace the old one in Redis
-      const newRefreshToken = this.generateRefreshToken({
-        userId: decoded.userId,
-      });
-      await redisClient.set(redisKey, "valid", "EX", 7 * 24 * 60 * 60); // Refresh token expiry: 7 days
+        const refreshToken = decodeToken("refresh", headers.refreshToken);
+        // [R1] if refresh token invalid
+        if (refreshToken.err === TOKEN_INVALID) {
+          // console.log("R1");
+          return this.throwUnauthorized(res, "Invalid refresh token");
+        }
 
-      res.setHeader("x-access-token", newAccessToken);
-      res.setHeader("x-refresh-token", newRefreshToken);
+        // [R2] if refresh token expired
+        if (refreshToken.err === TOKEN_EXPIRED) {
+          // console.log("R2");
+          const loginKey = `auth:${headers.userId}:${headers.deviceId}`;
+          const storedToken = await this.get(loginKey);
+          if (!storedToken) {
+            return this.throwUnauthorized(
+              res,
+              "Unauthorized, please login again",
+            );
+          }
+
+          if (storedToken !== headers.refreshToken) {
+            this.set(loginKey, headers.refreshToken, days_7);
+          }
+
+          const newAccessToken = generateAccessToken(tokenPayload);
+          const newRefreshToken = generateRefreshToken(tokenPayload);
+
+          res.setHeader("x-access-token", newAccessToken);
+          res.setHeader("x-refresh-token", newRefreshToken);
+
+          this.set(loginKey, newRefreshToken, days_7);
+        }
+
+        // [R3] if refresh token not expired
+        const validRefreshToken = !refreshToken.err && refreshToken?.token;
+        if (validRefreshToken && validRefreshToken.userId !== headers.userId) {
+          // console.log("R3");
+          return this.throwUnauthorized(
+            res,
+            "User id mismatch in refresh token",
+          );
+        }
+
+        // [R4] if refresh token not expired and user id match
+        if (validRefreshToken && validRefreshToken.userId === headers.userId) {
+          // console.log("R4");
+          const loginKey = `auth:${headers.userId}:${headers.deviceId}`;
+          const storedToken = await this.get(loginKey);
+          if (!storedToken) {
+            return this.throwUnauthorized(
+              res,
+              "Unauthorized, please login again",
+            );
+          }
+
+          if (storedToken !== headers.refreshToken) {
+            return this.throwUnauthorized(
+              res,
+              "Unauthorized, refresh token mismatch",
+            );
+          }
+
+          const newAccessToken = generateAccessToken(tokenPayload);
+          res.setHeader("x-access-token", newAccessToken);
+          res.locals.userId = validRefreshToken.userId;
+          res.locals.roleId = "roleIdNotImplementedYet";
+        }
+      }
+
+      // [A3] if access token not expired but mismatch user id
+      const validAccessToken = accessToken?.token;
+      if (validAccessToken && validAccessToken.userId !== headers.userId) {
+        // console.log("A3");
+        return this.throwUnauthorized(res, "User id mismatch in access token");
+      }
+
+      // [A4] if access token not expired and user id match
+      if (validAccessToken && validAccessToken.userId === headers.userId) {
+        // console.log("A4");
+        res.locals.userId = validAccessToken.userId;
+        res.locals.roleId = "roleIdNotImplementedYet";
+      }
 
       return next();
+      // ////////////////////////////////////////////////////////
+      // ////////////////////////////////////////////////////////
+      // ////////////////////////////////////////////////////////
+      // ////////////////////////////////////////////////////////
+
+      // // if access token expired
+      // if (!isTokenExpired(accessToken.exp)) {
+      //   res.locals.userId = accessToken.userId;
+      //   res.locals.roleId = "roleIdNotImplementedYet";
+      //   res.setHeader("x-user-id", accessToken.userId);
+      //   return next();
+      // }
+
+      // // if access token not expired
+      // // decode refresh token
+      // const refreshToken = decodeToken("refresh", headers.refreshToken);
+      // if (!refreshToken) {
+      //   return this.throwUnauthorized(res, "Invalid refresh token");
+      // }
+
+      // // check if user id in refresh token matches header user id
+      // if (refreshToken.userId !== headers.userId) {
+      //   return this.throwUnauthorized(res, "User id mismatch in refresh token");
+      // }
+      // res.setHeader("x-user-id", refreshToken.userId);
+
+      // // cek is user login from redis
+      // const loginKey = `auth:${refreshToken.userId}:${headers.deviceId}`;
+      // const storedToken = await this.get(loginKey);
+      // if (!storedToken) {
+      //   return this.throwUnauthorized(res, "Unauthorized, please login again");
+      // }
+
+      // // update stored token if different
+      // if (storedToken !== headers.refreshToken) {
+      //   this.set(loginKey, headers.refreshToken, days_7);
+      // }
+
+      // const tokenPayload = {
+      //   userId: refreshToken.userId ?? "",
+      //   roleId: "roleIdNotImplementedYet",
+      // };
+      // const newAccessToken = generateAccessToken(tokenPayload);
+
+      // // check if refresh token is expired
+      // if (isTokenExpired(refreshToken.exp)) {
+      //   const newRefreshToken = generateRefreshToken(tokenPayload);
+      //   this.set(loginKey, newRefreshToken, days_7);
+
+      //   res.setHeader("x-refresh-token", newRefreshToken);
+      // }
+
+      // res.setHeader("x-access-token", newAccessToken);
+
+      // res.locals.userId = refreshToken.userId;
+      // res.locals.roleId = "roleIdNotImplementedYet";
+      // return next();
     } catch (_) {
-      res.status(StatusForbidden).json({
+      res.status(StatusUnauthorized).json({
         success: false,
-        statusCode: StatusForbidden,
+        statusCode: StatusUnauthorized,
         message: "Failed to refresh token",
         errors: [],
       });
     }
+  }
+
+  private validateHeaders(req: Request, res: Response): RequiredHeaders | null {
+    const userId = req.headers["x-user-id"];
+    const accessToken = req.headers["x-access-token"];
+    const refreshToken = req.headers["x-refresh-token"];
+
+    if (!userId || !accessToken || !refreshToken) {
+      const errorRes = Object.assign({}, baseErrorRes, {
+        statusCode: StatusUnauthorized,
+        message: "Missing required headers",
+        errors: [
+          !userId && "x-user-id is required",
+          !accessToken && "x-access-token is required",
+          !refreshToken && "x-refresh-token is required",
+        ].filter(Boolean),
+      });
+
+      res.status(StatusUnauthorized).json(errorRes);
+      return null;
+    }
+
+    if (!isValidObjectId(userId)) {
+      const errorRes = Object.assign({}, baseErrorRes, {
+        statusCode: StatusUnauthorized,
+        message: "Invalid user id",
+        errors: [],
+      });
+
+      res.status(StatusUnauthorized).json(errorRes);
+    }
+
+    return {
+      deviceId: res.locals.deviceId as string,
+      userId: userId as string,
+      accessToken: accessToken as string,
+      refreshToken: refreshToken as string,
+    };
+  }
+
+  private throwUnauthorized(res: Response, msg?: string) {
+    const errorRes = Object.assign({}, baseErrorRes, {
+      statusCode: StatusUnauthorized,
+      message: msg ?? "Forbidden",
+    });
+
+    res.status(StatusUnauthorized).json(errorRes);
   }
 }
 
