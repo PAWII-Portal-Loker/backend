@@ -1,14 +1,17 @@
 // import BaseFilter from "@base/filter";
-// import { FilterQuery } from "mongoose";
+// import { DataFilter } from "@types";
 
 // class XxxxxFilter extends BaseFilter {
-//   public handleFilter(reqParam: XxxxGetDto): FilterQuery<XxxxGetDto> {
-//     const filters = {};
+//   public handleFilter(reqParam: XxxxGetDto): DataFilter<XxxxGetDto> {
+//     const query = {};
 
-//     this.safelyAssign(filters, "name", reqParam.name);
-//     this.safelyAssign(filters, "email", reqParam.email);
+//     this.safelyAssign(query, "name", reqParam.name);
+//     this.safelyAssign(query, "email", reqParam.email);
 
-//     return filters;
+//     const sortKey = ["name", "email"];
+//     const sorter = this.handleSorter(sortKey, reqParam?.sort, reqParam?.order);
+
+//     return { query, sorter };
 //   }
 // }
 

@@ -1,4 +1,3 @@
-// import BaseService from "@base/service";
 // import { Pagination, ServiceError } from "@types";
 // import {
 //   StatusBadRequest,
@@ -7,13 +6,13 @@
 // } from "@utils/statusCodes";
 // import { FilterQuery, isValidObjectId } from "mongoose";
 
-// class XxxxxService extends BaseService<XxxxDto> {
+// class XxxxxService extends BaseMongoService<XxxxDto> {
 //   constructor() {
 //     super(XxxxModel);
 //   }
 
 //   public async getAll(
-//     filters: FilterQuery<unknown>,
+//     filters: DataFilter,
 //     paginator?: Pagination,
 //   ): Promise<XxxxDto[] | ServiceError> {
 //     const xxxxx = await this.find(filters, paginator);

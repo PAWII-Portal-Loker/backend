@@ -1,4 +1,4 @@
-// import { shouldBeNumber } from "@utils/yup";
+// import { paginatorSchema, sorterSchema } from "@consts";
 // import * as Yup from "yup";
 
 // export interface XxxxxGetDto {
@@ -9,12 +9,10 @@
 // }
 
 // export const XxxxxGetSchema = Yup.object({
-//   page: shouldBeNumber().min(1, "page must be at least 1"),
-//   limit: shouldBeNumber()
-//     .min(1, "limit must be at least 1")
-//     .max(100, "limit must be at most 100"),
 //   name: Yup.string().optional(),
 //   email: Yup.string().optional(),
+//   ...paginatorSchema,
+//   ...sorterSchema,
 // })
 //   .noUnknown(true)
 //   .strict(true);
