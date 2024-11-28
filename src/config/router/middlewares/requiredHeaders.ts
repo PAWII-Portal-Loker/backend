@@ -16,7 +16,7 @@ export function requiredHeaders() {
       return;
     }
 
-    res.locals.deviceId = deviceId;
+    res.setLocals("deviceId", deviceId);
     return next();
   };
 }

@@ -105,8 +105,8 @@ class AuthMiddleware extends RedisService {
 
           const newAccessToken = generateAccessToken(tokenPayload);
           res.setHeader("x-access-token", newAccessToken);
-          res.locals.userId = validRefreshToken.userId;
-          res.locals.roleId = "roleIdNotImplementedYet";
+          res.setLocals("userId", validRefreshToken.userId);
+          res.setLocals("roleId", "roleIdNotImplementedYet");
         }
       }
 
@@ -120,69 +120,13 @@ class AuthMiddleware extends RedisService {
       // [A4] if access token not expired and user id match
       if (validAccessToken && validAccessToken.userId === headers.userId) {
         // console.log("A4");
-        res.locals.userId = validAccessToken.userId;
-        res.locals.roleId = "roleIdNotImplementedYet";
+        res.setLocals("userId", validAccessToken.userId);
+        res.setLocals("roleId", "roleIdNotImplementedYet");
       }
 
       return next();
-      // ////////////////////////////////////////////////////////
-      // ////////////////////////////////////////////////////////
-      // ////////////////////////////////////////////////////////
-      // ////////////////////////////////////////////////////////
-
-      // // if access token expired
-      // if (!isTokenExpired(accessToken.exp)) {
-      //   res.locals.userId = accessToken.userId;
-      //   res.locals.roleId = "roleIdNotImplementedYet";
-      //   res.setHeader("x-user-id", accessToken.userId);
-      //   return next();
-      // }
-
-      // // if access token not expired
-      // // decode refresh token
-      // const refreshToken = decodeToken("refresh", headers.refreshToken);
-      // if (!refreshToken) {
-      //   return this.throwUnauthorized(res, "Invalid refresh token");
-      // }
-
-      // // check if user id in refresh token matches header user id
-      // if (refreshToken.userId !== headers.userId) {
-      //   return this.throwUnauthorized(res, "User id mismatch in refresh token");
-      // }
-      // res.setHeader("x-user-id", refreshToken.userId);
-
-      // // cek is user login from redis
-      // const loginKey = `auth:${refreshToken.userId}:${headers.deviceId}`;
-      // const storedToken = await this.get(loginKey);
-      // if (!storedToken) {
-      //   return this.throwUnauthorized(res, "Unauthorized, please login again");
-      // }
-
-      // // update stored token if different
-      // if (storedToken !== headers.refreshToken) {
-      //   this.set(loginKey, headers.refreshToken, days_7);
-      // }
-
-      // const tokenPayload = {
-      //   userId: refreshToken.userId ?? "",
-      //   roleId: "roleIdNotImplementedYet",
-      // };
-      // const newAccessToken = generateAccessToken(tokenPayload);
-
-      // // check if refresh token is expired
-      // if (isTokenExpired(refreshToken.exp)) {
-      //   const newRefreshToken = generateRefreshToken(tokenPayload);
-      //   this.set(loginKey, newRefreshToken, days_7);
-
-      //   res.setHeader("x-refresh-token", newRefreshToken);
-      // }
-
-      // res.setHeader("x-access-token", newAccessToken);
-
-      // res.locals.userId = refreshToken.userId;
-      // res.locals.roleId = "roleIdNotImplementedYet";
-      // return next();
-    } catch (_) {
+    } catch (err) {
+      console.log(err);
       res.status(StatusUnauthorized).json({
         success: false,
         statusCode: StatusUnauthorized,
@@ -223,7 +167,7 @@ class AuthMiddleware extends RedisService {
     }
 
     return {
-      deviceId: res.locals.deviceId as string,
+      deviceId: res.getLocals("deviceId") as string,
       userId: userId as string,
       accessToken: accessToken as string,
       refreshToken: refreshToken as string,

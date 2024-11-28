@@ -4,6 +4,8 @@ import { snakeCaseHandler } from "./middlewares/snakeCaseHandler";
 import { jsonParseHandler } from "./middlewares/jsonParseHandler";
 import { corsHandler } from "./middlewares/corsHandler";
 import { requiredHeaders } from "./middlewares/requiredHeaders";
+import { setLocals } from "src/chore/express/setLocals";
+import { getLocals } from "src/chore/express/getLocals";
 
 class Router {
   app: express.Application;
@@ -11,6 +13,9 @@ class Router {
 
   constructor() {
     this.app = express();
+
+    this.app.use(getLocals);
+    this.app.use(setLocals);
 
     this.app.use(requiredHeaders());
     this.app.use(snakeCaseHandler());

@@ -55,7 +55,7 @@ class AuthController extends BaseController {
   private async signOut() {
     this.router.post("/v1/auth/signout", async (_: Request, res: Response) => {
       const isUserExists = await this.userSubservice.isUserExists({
-        _id: this.getHeader(res, "user-id"),
+        _id: res.locals.userId,
       });
       if (this.isServiceError(res, isUserExists)) {
         return;
@@ -68,8 +68,8 @@ class AuthController extends BaseController {
       }
 
       const signOut = this.authService.signOut({
-        userId: this.getHeader(res, "user-id"),
-        deviceId: this.getHeader(res, "device-id"),
+        userId: res.locals.userId,
+        deviceId: res.locals.deviceId,
       });
 
       return this.handleSuccess(res, {

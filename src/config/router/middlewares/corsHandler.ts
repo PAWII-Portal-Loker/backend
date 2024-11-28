@@ -5,7 +5,7 @@ export function corsHandler() {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept, X-Access-Token, X-Refresh-Token",
+      "Origin, X-Requested-With, Content-Type, Accept, x-access-token, x-refresh-token, x-device-id, x-user-id",
     );
     next();
   };
