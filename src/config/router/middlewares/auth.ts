@@ -10,8 +10,11 @@ import RedisService from "@base/redisService";
 import { baseErrorRes, days_7, TOKEN_EXPIRED, TOKEN_INVALID } from "@consts";
 import { RequiredHeaders } from "@types";
 import { isValidObjectId } from "mongoose";
+import UserService from "@user/services/user.service";
 
 class AuthMiddleware extends RedisService {
+  private userService = new UserService();
+
   constructor(redisClient: Redis) {
     super(redisClient);
   }
@@ -22,6 +25,11 @@ class AuthMiddleware extends RedisService {
       const headers = this.validateHeaders(req, res);
       if (!headers) {
         return;
+      }
+
+      const user = await this.userService.findOne({ _id: headers.userId });
+      if (!user) {
+        return this.throwUnauthorized(res, "Invalid user id");
       }
 
       res.setHeader("x-access-token", headers.accessToken);
@@ -39,7 +47,7 @@ class AuthMiddleware extends RedisService {
         // console.log("A2");
         const tokenPayload = {
           userId: headers.userId ?? "",
-          roleId: "roleIdNotImplementedYet",
+          roleId: (user.role_id as string) ?? "",
         };
 
         const refreshToken = decodeToken("refresh", headers.refreshToken);
@@ -125,8 +133,7 @@ class AuthMiddleware extends RedisService {
       }
 
       return next();
-    } catch (err) {
-      console.log(err);
+    } catch (_) {
       res.status(StatusUnauthorized).json({
         success: false,
         statusCode: StatusUnauthorized,

@@ -12,8 +12,12 @@ import {
 import { SignOutDto } from "../dtos/signOut.dto";
 import RedisService from "@base/redisService";
 import { IsLoginDto } from "../dtos/isLogin.dto";
+import UserService from "@user/services/user.service";
+import { StatusNotFound } from "@utils/statusCodes";
 
 class AuthService extends RedisService {
+  private userService = new UserService();
+
   constructor(redisClient: Redis) {
     super(redisClient);
   }
@@ -22,9 +26,14 @@ class AuthService extends RedisService {
     signData: Partial<SignInDto>,
   ): Promise<TokenDto | ServiceError> {
     const loginKey = `auth:${signData.userId}:${signData.deviceId}`;
+    const user = await this.userService.findOne({ _id: signData.userId });
+    if (!user) {
+      return this.throwError("User not found", StatusNotFound);
+    }
+
     const tokenPayload = {
       userId: signData.userId ?? "",
-      roleId: "roleIdNotImplementedYet", // TODO: implement role system
+      roleId: (user.role_id as string) ?? "",
     };
     const newAccessToken = generateAccessToken(tokenPayload);
 
