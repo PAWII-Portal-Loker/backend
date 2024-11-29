@@ -3,7 +3,6 @@ import BaseController from "@base/controller";
 import RoleService from "../services/role.service";
 import RoleFilter from "../filters/role.filter";
 import { RoleGetSchema } from "../dtos/roleGet.dto";
-import { RoleDto } from "../dtos/role.dto";
 
 class RoleController extends BaseController {
   private roleService = new RoleService();
@@ -29,16 +28,9 @@ class RoleController extends BaseController {
 
       return this.handleSuccess(res, {
         message: "Success getting roles",
-        data: this.#mapResponse(roles),
+        data: roles,
       });
     });
-  }
-
-  #mapResponse(data: RoleDto[]) {
-    return data.map((role) => ({
-      id: role._id,
-      name: role.name,
-    }));
   }
 }
 

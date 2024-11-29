@@ -17,8 +17,6 @@ class UserController extends BaseController {
     this.createUser();
   }
 
-  // TODO: improve query params by add sortBy and orderBy
-  // TODO: testing middleware
   private async getAllUsers() {
     this.router.get(
       "/v1/users",
@@ -56,7 +54,6 @@ class UserController extends BaseController {
     this.router.get("/v1/users/:id", async (req: Request, res: Response) => {
       const userId = req.params.id;
       const user = await this.userService.getUserById(userId);
-
       if (this.isServiceError(res, user)) {
         return;
       }
@@ -75,7 +72,12 @@ class UserController extends BaseController {
         return;
       }
 
-      const newUser = await this.userService.createUser(reqBody);
+      const newUserId = await this.userService.createUser(reqBody);
+      if (this.isServiceError(res, newUserId)) {
+        return;
+      }
+
+      const newUser = await this.userService.getUserById(newUserId);
       if (this.isServiceError(res, newUser)) {
         return;
       }

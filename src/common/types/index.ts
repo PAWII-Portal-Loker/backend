@@ -51,7 +51,7 @@ export type Sorter = {
 
 export type DataFilter<T = unknown> = {
   query: FilterQuery<T>;
-  sorter: Sorter | null;
+  sorter?: Sorter | null;
 };
 
 export type RequiredHeaders = {

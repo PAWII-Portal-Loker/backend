@@ -1,11 +1,12 @@
 import { UserDto } from "@user/dtos/user.dto";
-import UserService from "./user.service";
 import { ServiceError } from "@types";
 import { StatusBadRequest, StatusNotFound } from "@utils/statusCodes";
+import BaseMongoService from "@base/mongoService";
+import { UserModel } from "@user/models/user.model";
 
-class UserSubservice extends UserService {
+class UserSubservice extends BaseMongoService<UserDto> {
   constructor() {
-    super();
+    super(UserModel);
   }
 
   public async isUserExists(

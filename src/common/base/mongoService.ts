@@ -11,7 +11,7 @@ class BaseMongoService<T extends Document> extends BaseService {
     this.model = model;
   }
 
-  protected async create(data: Partial<T>): Promise<T | null> {
+  public async create(data: Partial<T>): Promise<T | null> {
     try {
       const document = new this.model(data);
       return await document.save();
@@ -20,7 +20,7 @@ class BaseMongoService<T extends Document> extends BaseService {
     }
   }
 
-  protected async find(
+  public async find(
     filter: DataFilter<T> = { query: {}, sorter: null },
     paginator?: Pagination,
   ): Promise<T[] | null> {
@@ -32,7 +32,7 @@ class BaseMongoService<T extends Document> extends BaseService {
           .skip(paginator.limit * (paginator.page - 1));
       }
 
-      const sorter = filter.sorter;
+      const sorter = filter?.sorter;
       if (sorter) {
         query
           .sort({ [sorter.sort]: orderByMap[sorter.order] })
@@ -53,7 +53,7 @@ class BaseMongoService<T extends Document> extends BaseService {
     }
   }
 
-  protected async findOne(filter: FilterQuery<T>): Promise<T | null> {
+  public async findOne(filter: FilterQuery<T>): Promise<T | null> {
     try {
       return await this.model.findOne(filter).exec();
     } catch (error) {
@@ -61,7 +61,7 @@ class BaseMongoService<T extends Document> extends BaseService {
     }
   }
 
-  protected async update(
+  public async update(
     filter: FilterQuery<T>,
     updateData: UpdateQuery<T>,
   ): Promise<T | null> {
@@ -74,7 +74,7 @@ class BaseMongoService<T extends Document> extends BaseService {
     }
   }
 
-  protected async delete(filter: FilterQuery<T>): Promise<T | null> {
+  public async delete(filter: FilterQuery<T>): Promise<T | null> {
     try {
       return await this.model.findOneAndDelete(filter).exec();
     } catch (error) {
