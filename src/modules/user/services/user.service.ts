@@ -31,7 +31,7 @@ class UserService extends BaseMongoService<UserDto> {
       return this.throwError("Error getting users", StatusBadRequest);
     }
 
-    const roleIds = [...new Set(users.map((user) => user.role_id))];
+    const roleIds = [...new Set(users.map((user) => user.roleId))];
     const roles = await this.roleService.find({
       query: { _id: { $in: roleIds } },
     });
@@ -42,7 +42,7 @@ class UserService extends BaseMongoService<UserDto> {
     return users.map((user) =>
       this.#mapResponse(
         user,
-        roles.find((role) => isIdEquals(user.role_id, role._id)),
+        roles.find((role) => isIdEquals(user.roleId, role._id)),
       ),
     );
   }
@@ -59,7 +59,7 @@ class UserService extends BaseMongoService<UserDto> {
       return this.throwError("User not found", StatusNotFound);
     }
 
-    const role = await this.roleService.findOne({ _id: user.role_id });
+    const role = await this.roleService.findOne({ _id: user.roleId });
     if (!role) {
       return this.throwError("Role not found", StatusNotFound);
     }
@@ -84,7 +84,7 @@ class UserService extends BaseMongoService<UserDto> {
       name: data.name,
       email: data.email,
       password: data.password,
-      role_id: data.role?.id,
+      roleId: data.role?.id,
     });
     if (!newUser) {
       return this.throwError("Error creating user", StatusBadRequest);

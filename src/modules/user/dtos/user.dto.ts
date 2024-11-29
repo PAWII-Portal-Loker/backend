@@ -6,7 +6,7 @@ export interface UserDto extends Document, Timestamps {
   name: string;
   email: string;
   password: string;
-  role_id: RoleDto["_id"];
+  roleId: RoleDto["_id"];
 }
 
 export interface UserResponseDto {

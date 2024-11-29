@@ -50,7 +50,7 @@ class UserSubservice extends BaseMongoService<UserDto> {
       return this.throwError("User not found", StatusNotFound);
     }
 
-    const role = await this.roleService.findOne({ _id: user.role_id });
+    const role = await this.roleService.findOne({ _id: user.roleId });
     if (!role) {
       return this.throwError("Role not found", StatusNotFound);
     }

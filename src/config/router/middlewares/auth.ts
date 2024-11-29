@@ -47,7 +47,7 @@ class AuthMiddleware extends RedisService {
         // console.log("A2");
         const tokenPayload = {
           userId: headers.userId ?? "",
-          roleId: (user.role_id as string) ?? "",
+          roleId: (user.roleId as string) ?? "",
         };
 
         const refreshToken = decodeToken("refresh", headers.refreshToken);

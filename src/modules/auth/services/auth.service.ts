@@ -33,7 +33,7 @@ class AuthService extends RedisService {
 
     const tokenPayload = {
       userId: signData.userId ?? "",
-      roleId: (user.role_id as string) ?? "",
+      roleId: (user.roleId as string) ?? "",
     };
     const newAccessToken = generateAccessToken(tokenPayload);
 
