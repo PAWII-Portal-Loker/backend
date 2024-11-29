@@ -100,16 +100,26 @@ class AuthController extends BaseController {
           });
         }
 
-        const isLogin = await this.authService.isLogin({
-          userId: res.getLocals("userId"),
-          deviceId: res.getLocals("deviceId"),
-          refreshToken: res.getHeader("x-refresh-token") as string,
-        });
+        const [isLogin, userRole] = await Promise.all([
+          this.authService.isLogin({
+            userId: res.getLocals("userId"),
+            deviceId: res.getLocals("deviceId"),
+            refreshToken: res.getHeader("x-refresh-token") as string,
+          }),
+          this.userSubservice.getRoleByUserId(res.getLocals("userId")),
+        ]);
+        if (
+          this.isServiceError(res, isLogin) ||
+          this.isServiceError(res, userRole)
+        ) {
+          return;
+        }
+
         return this.handleSuccess(res, {
           message: "Success signing in",
           data: {
             isLogin,
-            // TODO: return role when role system is implemented
+            role: userRole,
           },
         });
       },
