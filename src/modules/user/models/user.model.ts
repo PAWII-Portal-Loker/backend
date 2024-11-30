@@ -3,10 +3,17 @@ import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema<UserDto>(
   {
-    name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true },
+    waNumber: { type: String, required: true },
+    imageUrl: { type: String, required: true },
+    bio: { type: String, required: true },
+    country: { type: String, required: true },
+    province: { type: String, required: true },
+    city: { type: String, required: true },
+    subdistrict: { type: String, required: true },
+    address: { type: String, required: true },
+    role: { type: String, required: true },
   },
   {
     timestamps: true,

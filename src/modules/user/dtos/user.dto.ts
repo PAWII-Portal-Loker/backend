@@ -1,19 +1,34 @@
 import { Timestamps } from "@types";
 import { Document } from "mongoose";
-import { RoleDto, RoleResponseDto } from "src/modules/role/dtos/role.dto";
+import { RolesEnum } from "src/modules/enums/consts/roles";
+import { RoleResponseDto } from "src/modules/role/dtos/role.dto";
 
 export interface UserDto extends Document, Timestamps {
-  name: string;
+  role: RolesEnum;
   email: string;
   password: string;
-  roleId: RoleDto["_id"];
+  waNumber: string;
+  imageUrl: string;
+  bio: string;
+  country: string;
+  province: string;
+  city: string;
+  subdistrict: string;
+  address: string;
 }
 
 export interface UserResponseDto {
   id: string;
-  name: string;
-  email: string;
   role: RoleResponseDto;
+  email: string;
+  waNumber: string;
+  imageUrl: string;
+  bio: string;
+  country: string;
+  province: string;
+  city: string;
+  subdistrict: string;
+  address: string;
   createdAt: Date;
   updatedAt: Date;
 }
