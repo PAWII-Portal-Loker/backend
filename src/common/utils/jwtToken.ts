@@ -6,8 +6,8 @@ import { TOKEN_EXPIRED, TOKEN_INVALID } from "@consts";
 
 export function generateAccessToken(payload: Partial<TokenPayloadDto>): string {
   const payloadToIssue: TokenPayloadDto = {
-    userId: payload.userId ?? "-",
-    roleId: payload.roleId ?? "-",
+    userId: payload.userId || "-",
+    role: payload.role || "-",
     iat: moment().unix(),
     exp: moment().add(1, "m").unix(),
   };
@@ -19,10 +19,10 @@ export function generateRefreshToken(
   payload: Partial<TokenPayloadDto>,
 ): string {
   const payloadToIssue: TokenPayloadDto = {
-    userId: payload.userId ?? "-",
+    userId: payload.userId || "-",
+    role: payload.role || "-",
     iat: moment().unix(),
     exp: moment().add(24, "h").unix(),
-    roleId: payload.roleId ?? "-",
   };
 
   return jwt.sign(payloadToIssue, env.get("REFRESH_TOKEN_SECRET"));
@@ -50,7 +50,7 @@ export function decodeToken(
     const validToken = decodedToken as TokenPayloadDto;
     if (
       !validToken.userId ||
-      !validToken.roleId ||
+      !validToken.role ||
       !validToken.iat ||
       !validToken.exp
     ) {
@@ -59,6 +59,7 @@ export function decodeToken(
 
     return { err: "", token: validToken };
   } catch (err) {
+    console.log(err);
     if (err instanceof jwt.TokenExpiredError) {
       return { err: TOKEN_EXPIRED };
     }

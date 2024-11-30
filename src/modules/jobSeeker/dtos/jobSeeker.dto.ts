@@ -1,5 +1,5 @@
 import { Timestamps } from "@types";
-import { UserDto, UserResponseDto } from "@user/dtos/user.dto";
+import { UserDto, UserResDto } from "@user/dtos/user.dto";
 import { Document } from "mongoose";
 
 export interface JobSeekerDto extends Document, Timestamps {
@@ -12,7 +12,7 @@ export interface JobSeekerDto extends Document, Timestamps {
 
 export interface JobSeekerResponseDto {
   id: string;
-  user: UserResponseDto;
+  user: UserResDto;
   name: string;
   lastEducation: string;
   major: string;

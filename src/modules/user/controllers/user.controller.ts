@@ -4,7 +4,7 @@ import UserService from "@user/services/user.service";
 import BaseController from "@base/controller";
 import { StatusCreated } from "@utils/statusCodes";
 import UserFilter from "@user/filters/user.filter";
-import { UserGetSchema } from "@user/dtos/userGet.dto";
+import { UserGetSchema } from "@user/dtos/userReq.dto";
 
 class UserController extends BaseController {
   private userService = new UserService();

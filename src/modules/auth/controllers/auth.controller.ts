@@ -29,7 +29,7 @@ class AuthController extends BaseController {
         return;
       }
 
-      // passing roleId when role system is implemented
+      // passing role when role system is implemented
       const signData: Partial<SignInDto> = {
         userId: user._id as string,
         deviceId: res.locals.deviceId,

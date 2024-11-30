@@ -1,5 +1,5 @@
 import { Timestamps } from "@types";
-import { UserDto, UserResponseDto } from "@user/dtos/user.dto";
+import { UserDto, UserResDto } from "@user/dtos/user.dto";
 import { Document } from "mongoose";
 import { CompanyTypeEnums } from "src/modules/enums/consts/companyTypes";
 
@@ -15,7 +15,7 @@ export interface CompanyDto extends Document, Timestamps {
 
 export interface CompanyResponseDto {
   id: string;
-  user: UserResponseDto;
+  user: UserResDto;
   companyType: CompanyTypeEnums;
   companyName: string;
   foundingDate: Date;

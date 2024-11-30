@@ -5,7 +5,7 @@ export interface TokenDto {
 
 export interface TokenPayloadDto {
   userId: string;
-  roleId: string;
+  role: string;
   iat: number;
   exp: number;
 }

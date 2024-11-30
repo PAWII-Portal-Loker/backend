@@ -1,4 +1,4 @@
-type ExpressLocalsKey = "userId" | "roleId" | "deviceId";
+type ExpressLocalsKey = "userId" | "role" | "deviceId";
 
 declare namespace Express {
   export interface Response {

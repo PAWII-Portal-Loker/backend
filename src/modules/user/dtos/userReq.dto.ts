@@ -2,7 +2,7 @@ import { paginatorSchema, sorterSchema } from "@consts";
 import { PaginatorDto, SorterDto } from "@types";
 import * as Yup from "yup";
 
-export interface UserGetDto extends PaginatorDto, SorterDto {
+export interface UserReqDto extends PaginatorDto, SorterDto {
   name?: string;
   email?: string;
 }

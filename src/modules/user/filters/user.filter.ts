@@ -1,9 +1,9 @@
 import BaseFilter from "@base/filter";
 import { DataFilter } from "@types";
-import { UserGetDto } from "@user/dtos/userGet.dto";
+import { UserReqDto } from "@user/dtos/userGet.req.dto";
 
 class UserFilter extends BaseFilter {
-  public handleFilter(reqParam: UserGetDto): DataFilter<UserGetDto> {
+  public handleFilter(reqParam: UserReqDto): DataFilter<UserReqDto> {
     const query = {};
 
     this.safelyAssign(query, "name", reqParam.name);
