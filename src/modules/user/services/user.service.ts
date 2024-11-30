@@ -10,6 +10,7 @@ import {
   StatusNotFound,
 } from "@utils/statusCodes";
 import { isValidObjectId } from "mongoose";
+import { userMapper } from "src/mapper/user.mapper";
 
 class UserService extends BaseMongoService<UserDto> {
   constructor() {
@@ -25,7 +26,7 @@ class UserService extends BaseMongoService<UserDto> {
       return this.throwError("Error getting users", StatusBadRequest);
     }
 
-    return users.map((user) => this.#mapResponse(user));
+    return users.map((user) => userMapper(user));
   }
 
   public async getUserById(id: string): Promise<UserResDto | ServiceError> {
@@ -38,7 +39,7 @@ class UserService extends BaseMongoService<UserDto> {
       return this.throwError("User not found", StatusNotFound);
     }
 
-    return this.#mapResponse(user);
+    return userMapper(user);
   }
 
   public async createUser(
@@ -59,23 +60,6 @@ class UserService extends BaseMongoService<UserDto> {
     }
 
     return newUser._id as string;
-  }
-
-  #mapResponse(user: UserDto): UserResDto {
-    return {
-      id: user._id as string,
-      role: user?.role ?? "",
-      email: user?.email ?? "",
-      waNumber: user?.waNumber ?? "",
-      imageUrl: user?.imageUrl ?? "",
-      bio: user?.bio ?? "",
-      province: user?.province ?? "",
-      city: user?.city ?? "",
-      subdistrict: user?.subdistrict ?? "",
-      address: user?.address ?? "",
-      createdAt: user?.createdAt ?? "",
-      updatedAt: user?.updatedAt ?? "",
-    };
   }
 }
 
