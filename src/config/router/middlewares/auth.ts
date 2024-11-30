@@ -38,13 +38,13 @@ class AuthMiddleware extends RedisService {
       const accessToken = decodeToken("access", headers.accessToken);
       // [A1] if access token invalid
       if (accessToken.err === TOKEN_INVALID) {
-        console.log("A1");
+        // console.log("A1");
         return this.throwUnauthorized(res, "Invalid access token");
       }
 
       // [A2] if access token expired
       if (accessToken.err === TOKEN_EXPIRED) {
-        console.log("A2");
+        // console.log("A2");
         const tokenPayload = {
           userId: headers.userId ?? "",
           role: (user.role as string) ?? "",
@@ -53,13 +53,13 @@ class AuthMiddleware extends RedisService {
         const refreshToken = decodeToken("refresh", headers.refreshToken);
         // [R1] if refresh token invalid
         if (refreshToken.err === TOKEN_INVALID) {
-          console.log("R1");
+          // console.log("R1");
           return this.throwUnauthorized(res, "Invalid refresh token");
         }
 
         // [R2] if refresh token expired
         if (refreshToken.err === TOKEN_EXPIRED) {
-          console.log("R2");
+          // console.log("R2");
           const loginKey = `auth:${headers.userId}:${headers.deviceId}`;
           const storedToken = await this.get(loginKey);
           if (!storedToken) {
@@ -85,7 +85,7 @@ class AuthMiddleware extends RedisService {
         // [R3] if refresh token not expired
         const validRefreshToken = !refreshToken.err && refreshToken?.token;
         if (validRefreshToken && validRefreshToken.userId !== headers.userId) {
-          console.log("R3");
+          // console.log("R3");
           return this.throwUnauthorized(
             res,
             "User id mismatch in refresh token",
@@ -94,7 +94,7 @@ class AuthMiddleware extends RedisService {
 
         // [R4] if refresh token not expired and user id match
         if (validRefreshToken && validRefreshToken.userId === headers.userId) {
-          console.log("R4");
+          // console.log("R4");
           const loginKey = `auth:${headers.userId}:${headers.deviceId}`;
           const storedToken = await this.get(loginKey);
           if (!storedToken) {
@@ -121,13 +121,13 @@ class AuthMiddleware extends RedisService {
       // [A3] if access token not expired but mismatch user id
       const validAccessToken = accessToken?.token;
       if (validAccessToken && validAccessToken.userId !== headers.userId) {
-        console.log("A3");
+        // console.log("A3");
         return this.throwUnauthorized(res, "User id mismatch in access token");
       }
 
       // [A4] if access token not expired and user id match
       if (validAccessToken && validAccessToken.userId === headers.userId) {
-        console.log("A4");
+        // console.log("A4");
         res.setLocals("userId", validAccessToken.userId);
         res.setLocals("role", "roleNotImplementedYet");
       }
