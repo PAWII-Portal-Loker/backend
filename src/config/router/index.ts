@@ -4,8 +4,8 @@ import { snakeCaseHandler } from "./middlewares/snakeCaseHandler";
 import { jsonParseHandler } from "./middlewares/jsonParseHandler";
 import { corsHandler } from "./middlewares/corsHandler";
 import { requiredHeaders } from "./middlewares/requiredHeaders";
-import { setLocals } from "src/chore/express/setLocals";
-import { getLocals } from "src/chore/express/getLocals";
+import { getLocals } from "@chore/express/getLocals";
+import { setLocals } from "@chore/express/setLocals";
 
 class Router {
   app: express.Application;

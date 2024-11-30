@@ -1,4 +1,5 @@
 import BaseMongoService from "@base/mongoService";
+import { userMapper } from "@mapper/user.mapper";
 import { DataFilter, Pagination, ServiceError } from "@types";
 import { UserDto } from "@user/dtos/user.dto";
 import { UserCreateDto } from "@user/dtos/userCreate.dto";
@@ -10,7 +11,6 @@ import {
   StatusNotFound,
 } from "@utils/statusCodes";
 import { isValidObjectId } from "mongoose";
-import { userMapper } from "src/mapper/user.mapper";
 
 class UserService extends BaseMongoService<UserDto> {
   constructor() {

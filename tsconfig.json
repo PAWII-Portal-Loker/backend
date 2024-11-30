@@ -14,11 +14,13 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
+      "@chore/*": ["src/chore/*"],
       "@base/*": ["src/common/base/*"],
       "@utils/*": ["src/common/utils/*"],
       "@types": ["src/common/types/index.ts"],
       "@consts": ["src/common/consts/index.ts"],
       "@config/*": ["src/config/*"],
+      "@mapper/*": ["src/mapper/*"],
       "@user/*": ["src/modules/user/*"]
     }
   }

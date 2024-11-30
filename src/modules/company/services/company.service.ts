@@ -9,11 +9,11 @@ import { isValidObjectId } from "mongoose";
 import { CompanyModel } from "../models/company.model";
 import { CompanyDto } from "../dtos/company.dto";
 import { CompanyResDto } from "../dtos/companyRes.dto";
-import { companyMapper } from "src/mapper/company.mapper";
 import UserService from "@user/services/user.service";
 import { isIdEquals } from "@utils/compare";
 import { CompanyCreateDto } from "../dtos/companyCreate.dto";
 import moment from "moment";
+import { companyMapper } from "@mapper/company.mapper";
 
 class CompanyService extends BaseMongoService<CompanyDto> {
   private userService = new UserService();
