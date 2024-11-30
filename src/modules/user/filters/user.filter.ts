@@ -1,6 +1,6 @@
 import BaseFilter from "@base/filter";
 import { DataFilter } from "@types";
-import { UserReqDto } from "@user/dtos/userGet.req.dto";
+import { UserReqDto } from "@user/dtos/userReq.dto";
 
 class UserFilter extends BaseFilter {
   public handleFilter(reqParam: UserReqDto): DataFilter<UserReqDto> {
