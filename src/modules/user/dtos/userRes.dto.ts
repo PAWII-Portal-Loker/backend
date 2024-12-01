@@ -1,4 +1,4 @@
-import { RolesEnum } from "src/modules/enums/consts/roles";
+import { RolesEnum } from "@enums/consts/roles";
 
 export interface UserResDto {
   id: string;

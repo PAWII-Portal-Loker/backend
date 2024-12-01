@@ -1,7 +1,7 @@
+import { CompanyTypeEnums } from "@enums/consts/companyTypes";
 import { Timestamps } from "@types";
 import { UserDto } from "@user/dtos/user.dto";
 import { Document } from "mongoose";
-import { CompanyTypeEnums } from "src/modules/enums/consts/companyTypes";
 
 export interface CompanyDto extends Document, Timestamps {
   userId: UserDto["_id"];

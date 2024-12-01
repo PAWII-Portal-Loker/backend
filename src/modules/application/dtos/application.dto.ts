@@ -1,7 +1,7 @@
+import { JobSeekerDto } from "@jobSeeker/dtos/jobSeeker.dto";
 import { Timestamps } from "@types";
+import { VacancyDto } from "@vacancy/dtos/vacancy.dto";
 import { Document } from "mongoose";
-import { JobSeekerDto } from "src/modules/jobSeeker/dtos/jobSeeker.dto";
-import { VacancyDto } from "src/modules/vacancy/dtos/vacancy.dto";
 
 export interface ApplicationDto extends Document, Timestamps {
   jobSeekerId: JobSeekerDto["_id"];

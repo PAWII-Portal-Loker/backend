@@ -3,7 +3,7 @@ import RedisDatabase from "@config/databases/redis";
 import Router from "@config/router";
 import env from "@utils/env";
 import UserController from "@user/controllers/user.controller";
-import AuthController from "./modules/auth/controllers/auth.controller";
+import AuthController from "@auth/controllers/auth.controller";
 
 new MongoDatabase({
   dbHost: env.get("MONGO_DB_HOST"),

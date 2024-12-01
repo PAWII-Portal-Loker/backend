@@ -21,7 +21,13 @@
       "@consts": ["src/common/consts/index.ts"],
       "@config/*": ["src/config/*"],
       "@mapper/*": ["src/mapper/*"],
-      "@user/*": ["src/modules/user/*"]
+      "@application/*": ["src/modules/application/*"],
+      "@auth/*": ["src/modules/auth/*"],
+      "@company/*": ["src/modules/company/*"],
+      "@enums/*": ["src/modules/enums/*"],
+      "@jobSeeker/*": ["src/modules/jobSeeker/*"],
+      "@user/*": ["src/modules/user/*"],
+      "@vacancy/*": ["src/modules/vacancy/*"]
     }
   }
 }

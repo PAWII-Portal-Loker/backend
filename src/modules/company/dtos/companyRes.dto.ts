@@ -1,5 +1,5 @@
+import { CompanyTypeEnums } from "@enums/consts/companyTypes";
 import { UserResDto } from "@user/dtos/userRes.dto";
-import { CompanyTypeEnums } from "src/modules/enums/consts/companyTypes";
 
 export interface CompanyResDto {
   id: string;

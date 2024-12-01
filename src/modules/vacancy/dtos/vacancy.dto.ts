@@ -1,8 +1,8 @@
+import { CompanyDto } from "@company/dtos/company.dto";
+import { IncomeTypeEnums } from "@enums/consts/incomeTypes";
+import { JobTypeEnums } from "@enums/consts/jobTypes";
 import { Timestamps } from "@types";
 import { Document } from "mongoose";
-import { CompanyDto } from "src/modules/company/dtos/company.dto";
-import { IncomeTypeEnums } from "src/modules/enums/consts/incomeTypes";
-import { JobTypeEnums } from "src/modules/enums/consts/jobTypes";
 
 export interface VacancyDto extends Document, Timestamps {
   companyId: CompanyDto["_id"];

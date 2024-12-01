@@ -1,7 +1,7 @@
 import { UserDto } from "@user/dtos/user.dto";
-import { CompanyDto } from "src/modules/company/dtos/company.dto";
-import { CompanyResDto } from "src/modules/company/dtos/companyRes.dto";
 import { userMapper } from "./user.mapper";
+import { CompanyDto } from "@company/dtos/company.dto";
+import { CompanyResDto } from "@company/dtos/companyRes.dto";
 
 export function companyMapper(
   company: CompanyDto,

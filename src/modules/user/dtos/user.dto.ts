@@ -1,6 +1,6 @@
+import { RolesEnum } from "@enums/consts/roles";
 import { Timestamps } from "@types";
 import { Document } from "mongoose";
-import { RolesEnum } from "src/modules/enums/consts/roles";
 
 export interface UserDto extends Document, Timestamps {
   role: RolesEnum;

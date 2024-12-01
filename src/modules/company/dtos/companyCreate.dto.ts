@@ -1,4 +1,4 @@
-import { COMPANY_TYPES } from "src/modules/enums/consts/companyTypes";
+import { COMPANY_TYPES } from "@enums/consts/companyTypes";
 import * as Yup from "yup";
 
 export interface CompanyCreateDto {

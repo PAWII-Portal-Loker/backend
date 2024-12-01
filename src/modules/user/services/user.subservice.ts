@@ -3,7 +3,7 @@ import { ServiceError } from "@types";
 import { StatusBadRequest, StatusNotFound } from "@utils/statusCodes";
 import BaseMongoService from "@base/mongoService";
 import { UserModel } from "@user/models/user.model";
-import { RolesEnum } from "src/modules/enums/consts/roles";
+import { RolesEnum } from "@enums/consts/roles";
 
 class UserSubservice extends BaseMongoService<UserDto> {
   constructor() {
