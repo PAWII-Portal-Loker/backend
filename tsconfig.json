@@ -20,6 +20,7 @@
       "@types": ["src/common/types/index.ts"],
       "@consts": ["src/common/consts/index.ts"],
       "@config/*": ["src/config/*"],
+      "@integrations/*": ["src/integrations/*"],
       "@mapper/*": ["src/mapper/*"],
       "@application/*": ["src/modules/application/*"],
       "@auth/*": ["src/modules/auth/*"],

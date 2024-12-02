@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import { BaseFile } from "@types";
-import AWSS3Service from "src/integrations/aws/awsS3Service";
 import { StatusBadRequest, StatusNoContent } from "@utils/statusCodes";
 import { MB_10 } from "@consts";
 import { parseFormData } from "@config/router/middlewares/parser";
+import AWSS3Service from "@integrations/aws/awsS3Service";
 
 class FileUploadController extends BaseController {
   private awsS3Service = new AWSS3Service();
