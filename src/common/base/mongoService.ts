@@ -67,9 +67,10 @@ class BaseMongoService<T extends Document> extends BaseService {
   ): Promise<T | null> {
     try {
       return await this.model
-        .findOneAndUpdate(filter, updateData, { new: true })
+        .findOneAndUpdate(filter, updateData, { new: false })
         .exec();
     } catch (error) {
+      console.log(error);
       return this.handleError(error);
     }
   }

@@ -28,8 +28,8 @@ class UserController extends BaseController {
         }
 
         const paginator = this.paginate(reqParam.page, reqParam.limit);
-
         const filters = this.userFilter.handleFilter(reqParam);
+
         const [users, count] = await Promise.all([
           this.userService.getAllUsers(filters, paginator),
           this.userService.count(filters),
