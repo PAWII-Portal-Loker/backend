@@ -103,6 +103,34 @@ class CompanyService extends BaseMongoService<CompanyDto> {
 
     return newCompany._id as string;
   }
+
+  public async updateCompany(
+    data: Partial<CompanyCreateDto>,
+    userId: string,
+  ): Promise<string | ServiceError> {
+    const company = await this.findOne({ userId });
+    if (!company) {
+      return this.throwError("Company not found", StatusConflict);
+    }
+
+    const updatedCompany = await this.update(
+      { _id: company._id },
+      {
+        companyType: data.company_type,
+        companyName: data.company_name,
+        foundingDate: moment(data.founding_date).toDate(),
+        employeeTotal: data.employee_total,
+        earlyWorkingHour: data.early_working_hour,
+        endWorkingHour: data.end_working_hour,
+      },
+    );
+    console.log(updatedCompany);
+    if (!updatedCompany) {
+      return this.throwError("Error updating company", StatusBadRequest);
+    }
+
+    return updatedCompany._id as string;
+  }
 }
 
 export default CompanyService;

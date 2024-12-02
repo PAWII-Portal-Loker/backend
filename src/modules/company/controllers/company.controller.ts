@@ -8,6 +8,10 @@ import {
   CompanyCreateSchema,
 } from "@company/dtos/companyCreate.dto";
 import { StatusCreated } from "@utils/statusCodes";
+import {
+  CompanyUpdateDto,
+  CompanyUpdateSchema,
+} from "@company/dtos/companyUpdate.dto";
 
 class CompanyController extends BaseController {
   private companyService = new CompanyService();
@@ -18,6 +22,7 @@ class CompanyController extends BaseController {
     this.getAllCompanies();
     this.getCompanyById();
     this.createCompany();
+    this.updateCompany();
   }
 
   private async getAllCompanies() {
@@ -95,6 +100,44 @@ class CompanyController extends BaseController {
           statusCode: StatusCreated,
           message: "Success creating company",
           data: newCompany,
+        });
+      },
+    );
+  }
+
+  private async updateCompany() {
+    this.router.put(
+      "/v1/companies",
+      this.mustAuthorized,
+      async (req: Request, res: Response) => {
+        const reqBody = this.validate<CompanyUpdateDto>(
+          req,
+          res,
+          CompanyUpdateSchema,
+        );
+        if (!reqBody) {
+          return;
+        }
+
+        const userId = res.locals.userId;
+        const updatedCompany = await this.companyService.updateCompany(
+          reqBody,
+          userId,
+        );
+        if (this.isServiceError(res, updatedCompany)) {
+          return;
+        }
+
+        const company =
+          await this.companyService.getCompanyById(updatedCompany);
+        if (this.isServiceError(res, company)) {
+          return;
+        }
+
+        return this.handleSuccess(res, {
+          statusCode: StatusCreated,
+          message: "Success updating company",
+          data: company,
         });
       },
     );

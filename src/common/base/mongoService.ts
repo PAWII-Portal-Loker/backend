@@ -70,6 +70,7 @@ class BaseMongoService<T extends Document> extends BaseService {
         .findOneAndUpdate(filter, updateData, { new: false })
         .exec();
     } catch (error) {
+      console.log(error);
       return this.handleError(error);
     }
   }
