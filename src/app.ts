@@ -4,6 +4,7 @@ import Router from "@config/router";
 import env from "@utils/env";
 import UserController from "@user/controllers/user.controller";
 import AuthController from "@auth/controllers/auth.controller";
+import CompanyController from "@company/controllers/company.controller";
 
 new MongoDatabase({
   dbHost: env.get("MONGO_DB_HOST"),
@@ -20,6 +21,7 @@ const router = new Router();
 
 router.app.use("/", new UserController().getRouter());
 router.app.use("/", new AuthController().getRouter());
+router.app.use("/", new CompanyController().getRouter());
 
 router.app.get("/", (_, res) => {
   res.send("Hello from USER service");

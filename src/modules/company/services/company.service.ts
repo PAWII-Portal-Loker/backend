@@ -14,6 +14,7 @@ import { isIdEquals } from "@utils/compare";
 import { CompanyCreateDto } from "../dtos/companyCreate.dto";
 import moment from "moment";
 import { companyMapper } from "@mapper/company.mapper";
+import { ROLE_COMPANY } from "@enums/consts/roles";
 
 class CompanyService extends BaseMongoService<CompanyDto> {
   private userService = new UserService();
@@ -77,16 +78,27 @@ class CompanyService extends BaseMongoService<CompanyDto> {
       return this.throwError("Company already registered", StatusConflict);
     }
 
-    const newCompany = await this.create({
-      companyType: data.companyType,
-      companyName: data.companyName,
-      foundingDate: moment(data.foundingDate).toDate(),
-      employeeTotal: data.employeeTotal,
-      earlyWorkingHour: data.earlyWorkingHour,
-      endWorkingHour: data.earlyWorkingHour,
-    });
+    const createCompanyPayload = {
+      userId: userId,
+      companyType: data.company_type,
+      companyName: data.company_name,
+      foundingDate: moment(data.founding_date).toDate(),
+      employeeTotal: data.employee_total,
+      earlyWorkingHour: data.early_working_hour,
+      endWorkingHour: data.end_working_hour,
+    };
+
+    const [newCompany, updatedUser] = await Promise.all([
+      this.create(createCompanyPayload),
+      this.userService.update({ _id: userId }, { role: ROLE_COMPANY }),
+    ]);
     if (!newCompany) {
+      this.userService.update({ _id: userId }, { role: null });
       return this.throwError("Error creating company", StatusBadRequest);
+    }
+    if (!updatedUser) {
+      this.delete({ _id: newCompany._id });
+      return this.throwError("Error updating user", StatusBadRequest);
     }
 
     return newCompany._id as string;

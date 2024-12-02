@@ -59,7 +59,6 @@ export function decodeToken(
 
     return { err: "", token: validToken };
   } catch (err) {
-    console.log(err);
     if (err instanceof jwt.TokenExpiredError) {
       return { err: TOKEN_EXPIRED };
     }
