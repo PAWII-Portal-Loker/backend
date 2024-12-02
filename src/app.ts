@@ -5,6 +5,7 @@ import env from "@utils/env";
 import UserController from "@user/controllers/user.controller";
 import AuthController from "@auth/controllers/auth.controller";
 import CompanyController from "@company/controllers/company.controller";
+import ConstsController from "@enums/contollers/consts.controller";
 
 new MongoDatabase({
   dbHost: env.get("MONGO_DB_HOST"),
@@ -19,6 +20,7 @@ RedisDatabase.getInstance().initialize({
 
 const router = new Router();
 
+router.app.use("/", new ConstsController().getRouter());
 router.app.use("/", new UserController().getRouter());
 router.app.use("/", new AuthController().getRouter());
 router.app.use("/", new CompanyController().getRouter());
