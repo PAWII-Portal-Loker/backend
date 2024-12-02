@@ -1,7 +1,7 @@
 import { COMPANY_TYPES } from "@enums/consts/companyTypes";
 import * as Yup from "yup";
 
-export interface CompanyCreateDto {
+export interface CompanyUpdateDto {
   company_type: string;
   company_name: string;
   founding_date: string;
@@ -10,7 +10,7 @@ export interface CompanyCreateDto {
   end_working_hour: string;
 }
 
-export const CompanyCreateSchema: Yup.Schema<CompanyCreateDto> = Yup.object({
+export const CompanyUpdateSchema: Yup.Schema<CompanyUpdateDto> = Yup.object({
   company_type: Yup.string()
     .required("company_type is required")
     .oneOf(
