@@ -25,6 +25,7 @@
       "@auth/*": ["src/modules/auth/*"],
       "@company/*": ["src/modules/company/*"],
       "@enums/*": ["src/modules/enums/*"],
+      "@fileUpload/*": ["src/modules/fileUpload/*"],
       "@jobSeeker/*": ["src/modules/jobSeeker/*"],
       "@user/*": ["src/modules/user/*"],
       "@vacancy/*": ["src/modules/vacancy/*"]
