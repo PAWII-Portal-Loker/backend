@@ -20,11 +20,13 @@
       "@types": ["src/common/types/index.ts"],
       "@consts": ["src/common/consts/index.ts"],
       "@config/*": ["src/config/*"],
+      "@integrations/*": ["src/integrations/*"],
       "@mapper/*": ["src/mapper/*"],
       "@application/*": ["src/modules/application/*"],
       "@auth/*": ["src/modules/auth/*"],
       "@company/*": ["src/modules/company/*"],
       "@enums/*": ["src/modules/enums/*"],
+      "@fileUpload/*": ["src/modules/fileUpload/*"],
       "@jobSeeker/*": ["src/modules/jobSeeker/*"],
       "@user/*": ["src/modules/user/*"],
       "@vacancy/*": ["src/modules/vacancy/*"]

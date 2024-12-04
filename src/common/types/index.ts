@@ -70,3 +70,15 @@ export type SorterDto = {
   sort?: string;
   order?: string;
 };
+
+export type BaseFile = {
+  name: string;
+  size: number;
+  type: string;
+  extension: string;
+  content: Buffer;
+};
+
+export type UploadedFile = {
+  path: string;
+};
