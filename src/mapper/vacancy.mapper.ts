@@ -13,10 +13,10 @@ export function vacancyMapper(
     jobType: vacancy?.jobType ?? "",
     incomeType: vacancy?.incomeType ?? "",
     position: vacancy?.position ?? "",
-    thumnailUrl: vacancy?.thumnailUrl ?? "",
+    thumbnailUrl: vacancy?.thumbnailUrl ?? "",
     description: vacancy?.description ?? "",
-    applied_count: vacancy?.applied_count ?? "",
-    is_closed: vacancy?.is_closed ?? "",
+    appliedCount: vacancy?.appliedCount ?? "",
+    isClosed: vacancy?.isClosed ?? "",
     createdAt: vacancy?.createdAt ?? "",
     updatedAt: vacancy?.updatedAt ?? "",
   };

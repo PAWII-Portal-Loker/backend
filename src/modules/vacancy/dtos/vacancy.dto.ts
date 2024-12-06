@@ -9,8 +9,8 @@ export interface VacancyDto extends Document, Timestamps {
   jobType: JobTypeEnums;
   incomeType: IncomeTypeEnums;
   position: string;
-  thumnailUrl: string;
+  thumbnailUrl: string;
   description: string;
-  applied_count: number;
+  appliedCount: number;
   isClosed: boolean;
 }

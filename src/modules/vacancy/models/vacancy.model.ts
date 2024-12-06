@@ -7,7 +7,7 @@ const vacancySchema = new Schema<VacancyDto>(
     jobType: { type: String, required: true },
     incomeType: { type: String, required: true },
     position: { type: String, required: true },
-    thumnailUrl: { type: String, required: true },
+    thumbnailUrl: { type: String, required: true },
     description: { type: String, required: true },
     applied_count: { type: Number, required: true },
     is_closed: { type: Boolean, required: true },

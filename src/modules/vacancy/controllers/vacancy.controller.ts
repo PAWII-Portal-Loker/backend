@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import VacancyService from "@vacancy/services/vacancy.service";
-import VacancyFilter from "@vacancy/filters/vacancy.filter";
+import VacancyFilter from "@vacancy/services/vacancy.filterService";
 import { VacancyGetSchema } from "@vacancy/dtos/vacancyReq.dto";
 import {
   VacancyCreateDto,

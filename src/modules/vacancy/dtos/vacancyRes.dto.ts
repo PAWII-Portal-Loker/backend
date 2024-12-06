@@ -8,11 +8,11 @@ export interface VacancyResDto {
   jobType: JobTypeEnums;
   incomeType: IncomeTypeEnums;
   position: string;
-  thumnailUrl: string;
+  thumbnailUrl: string;
   description: string;
-  applied_count: number;
-  is_closed: boolean;
-  is_applied?: boolean;
+  appliedCount: number;
+  isClosed: boolean;
+  isApplied?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

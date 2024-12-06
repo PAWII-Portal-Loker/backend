@@ -81,7 +81,7 @@ class VacancyService extends BaseMongoService<VacancyDto> {
       jobType: data.jobType,
       incomeType: data.incomeType,
       position: data.position,
-      thumnailUrl: data.thumnailUrl ?? undefined,
+      thumbnailUrl: data.thumbnailUrl ?? undefined,
       description: data.description,
       is_closed: false,
       applied_count: 0,
@@ -128,7 +128,7 @@ class VacancyService extends BaseMongoService<VacancyDto> {
         jobType: data.jobType,
         incomeType: data.incomeType,
         position: data.position,
-        thumnailUrl: data.thumnailUrl,
+        thumbnailUrl: data.thumbnailUrl,
         description: data.description,
       },
     );

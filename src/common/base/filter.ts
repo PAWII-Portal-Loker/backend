@@ -72,14 +72,15 @@ class BaseFilter {
     filters: Record<string, unknown>,
     key: FilterByKey["key"],
     value: FilterByKey["value"],
-    filterCallback?: (cbParam: FilterByKey) => Record<string, unknown>,
+    filterCallback?: (cbParam: FilterByKey) => Record<string, unknown> | null,
   ) {
     if (!value || !this.isSafe(value)) {
       return;
     }
 
     if (filterCallback) {
-      Object.assign(filters, filterCallback({ key, value }));
+      const callbackResult = filterCallback({ key, value });
+      if (callbackResult) Object.assign(filters, callbackResult);
       return;
     }
 

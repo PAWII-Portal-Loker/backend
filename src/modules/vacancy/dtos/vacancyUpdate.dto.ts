@@ -6,7 +6,7 @@ export interface VacancyUpdateDto {
   jobType: JobTypeEnums;
   incomeType: IncomeTypeEnums;
   position: string;
-  thumnailUrl?: string;
+  thumbnailUrl?: string;
   description: string;
 }
 
@@ -30,7 +30,7 @@ export const VacancyUpdateSchema: Yup.Schema<VacancyUpdateDto> = Yup.object({
     .min(3, "position must be at least 3 characters")
     .max(100, "position must be at most 100 characters"),
 
-  thumnailUrl: Yup.string().optional().url("Invalid thumnail_url format"),
+  thumbnailUrl: Yup.string().optional().url("Invalid thumbnail_url format"),
 
   description: Yup.string()
     .required("description is required")
