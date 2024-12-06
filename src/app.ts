@@ -27,14 +27,16 @@ AWSS3Instance.getInstance().initialize({
 
 const router = new Router();
 
-router.app.use("/", new ConstsController().getRouter());
-router.app.use("/", new FileUploadController().getRouter());
-router.app.use("/", new UserController().getRouter());
-router.app.use("/", new AuthController().getRouter());
-router.app.use("/", new CompanyController().getRouter());
+router.app.use("/api/", new ConstsController().getRouter());
+router.app.use("/api/", new FileUploadController().getRouter());
+router.app.use("/api/", new UserController().getRouter());
+router.app.use("/api/", new AuthController().getRouter());
+router.app.use("/api/", new CompanyController().getRouter());
 
 router.app.get("/", (_, res) => {
-  res.send("Hello from USER service");
+  res.json({
+    message: "Welcome to the Portal Loker API",
+  });
 });
 
 router.listen();

@@ -9,6 +9,7 @@ import { setLocals } from "@chore/express/setLocals";
 
 class Router {
   app: express.Application;
+  host: string;
   port: number;
 
   constructor() {
@@ -23,11 +24,12 @@ class Router {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(corsHandler());
 
+    this.host = env.get("BE_HOST");
     this.port = Number(env.get("BE_PORT"));
   }
 
   listen() {
-    this.app.listen(this.port, () => {
+    this.app.listen(this.port, this.host, () => {
       console.log(`Server is running on port ${this.port}`);
     });
   }
