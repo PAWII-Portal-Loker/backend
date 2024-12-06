@@ -1,10 +1,11 @@
+import { LastEducationTypeEnum } from "@enums/consts/lastEducationTypes";
 import { UserResDto } from "@user/dtos/userRes.dto";
 
-export interface JobSeekerResponseDto {
+export interface JobSeekerResDto {
     id: string;
     user: UserResDto;
     name: string;
-    lastEducation: string;
+    lastEducation: LastEducationTypeEnum;
     major: string;
     gpa: number;
     createdAt: Date;

@@ -79,7 +79,7 @@ class CompanyService extends BaseMongoService<CompanyDto> {
     }
 
     const createCompanyPayload = {
-      userId: userId,
+      userId,
       companyType: data.company_type,
       companyName: data.company_name,
       foundingDate: moment(data.founding_date).toDate(),
