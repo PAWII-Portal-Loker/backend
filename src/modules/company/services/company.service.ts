@@ -124,7 +124,6 @@ class CompanyService extends BaseMongoService<CompanyDto> {
         endWorkingHour: data.end_working_hour,
       },
     );
-    console.log(updatedCompany);
     if (!updatedCompany) {
       return this.throwError("Error updating company", StatusBadRequest);
     }
