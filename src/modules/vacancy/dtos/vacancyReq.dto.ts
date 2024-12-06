@@ -5,15 +5,22 @@ import { PaginatorDto, SorterDto } from "@types";
 import { paginatorSchema, sorterSchema } from "@consts";
 
 export interface VacancyReqDto extends PaginatorDto, SorterDto {
+  ownedBy?: string;
+  ownerByMe?: boolean;
+
   position?: string;
   jobType?: JobTypeEnums;
   incomeType?: IncomeTypeEnums;
+  isClosed?: boolean;
 }
 
 export const VacancyGetSchema = Yup.object({
+  ownedBy: Yup.string().optional(),
+  ownerByMe: Yup.boolean().optional(),
   position: Yup.string().optional(),
   jobType: Yup.string().oneOf(JOB_TYPES).optional(),
   incomeType: Yup.string().oneOf(INCOME_TYPES).optional(),
+  isClosed: Yup.boolean().optional(),
   ...paginatorSchema,
   ...sorterSchema,
 })

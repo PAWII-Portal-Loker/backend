@@ -12,5 +12,5 @@ export interface VacancyDto extends Document, Timestamps {
   thumnailUrl: string;
   description: string;
   applied_count: number;
-  is_closed: boolean;
+  isClosed: boolean;
 }

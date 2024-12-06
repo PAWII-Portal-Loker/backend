@@ -5,6 +5,13 @@ import { toCamelCase } from "@utils/caseConvert";
 class BaseFilter {
   protected filter(param: FilterByKey) {
     const isCaseSensitive = param.isCaseSensitive || false;
+
+    if (typeof param.value === "boolean") {
+      return {
+        [param.key]: param.value,
+      };
+    }
+
     return {
       [param.key]: {
         $regex: param.value,
@@ -37,8 +44,9 @@ class BaseFilter {
     return sorter;
   }
 
-  protected isSafe(input: string | undefined): boolean {
+  protected isSafe(input: FilterByKey["value"]): boolean {
     if (!input) return false;
+    if (typeof input === "boolean") return true;
 
     const injectionPatterns = [
       /\$[a-zA-Z]+/, // Detects MongoDB operators like $ne, $gt, $or, etc.
@@ -62,16 +70,16 @@ class BaseFilter {
 
   protected safelyAssign(
     filters: Record<string, unknown>,
-    key: string,
-    value: string | undefined,
-    filterCallback?: (key: string, value: string) => Record<string, unknown>,
+    key: FilterByKey["key"],
+    value: FilterByKey["value"],
+    filterCallback?: (cbParam: FilterByKey) => Record<string, unknown>,
   ) {
     if (!value || !this.isSafe(value)) {
       return;
     }
 
     if (filterCallback) {
-      Object.assign(filters, filterCallback(key, value));
+      Object.assign(filters, filterCallback({ key, value }));
       return;
     }
 
@@ -82,7 +90,7 @@ class BaseFilter {
 
 interface FilterByKey {
   key: string;
-  value: string | undefined;
+  value: string | boolean | undefined;
   isCaseSensitive?: boolean;
 }
 
