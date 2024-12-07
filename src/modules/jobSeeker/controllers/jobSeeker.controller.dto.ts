@@ -20,6 +20,9 @@ class JobSeekerController extends BaseController {
     constructor() {
         super();
         this.getAllJobSeekers();
+        this.getJobSeekerById();
+        this.createJobSeeker();
+        this.updateJobSeeker();
     }
 
     private async getAllJobSeekers() {
@@ -66,6 +69,7 @@ class JobSeekerController extends BaseController {
             });
         });
     }
+
     private async createJobSeeker() {
         this.router.post("/v1/job-seekers", this.mustAuthorized, async (req: Request, res: Response) => {
             const reqBody = this.validate<JobSeekerCreateDto>(
