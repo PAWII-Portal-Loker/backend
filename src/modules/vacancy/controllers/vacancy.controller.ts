@@ -7,7 +7,7 @@ import {
   VacancyCreateDto,
   VacancyCreateSchema,
 } from "@vacancy/dtos/vacancyCreate.dto";
-import { StatusCreated, StatusForbidden } from "@utils/statusCodes";
+import { StatusCreated, StatusForbidden, StatusOk } from "@utils/statusCodes";
 import {
   VacancyUpdateStatusDto,
   VacancyUpdateStatusSchema,
@@ -25,35 +25,47 @@ class VacancyController extends BaseController {
 
   constructor() {
     super();
+    this.getAllVacancies();
+    this.getVacancyById();
+    this.createVacancy();
+    this.updateVacancyStatus();
+    this.updateVacancy();
   }
 
   private async getAllVacancies() {
-    this.router.get("/v1/vacancies", async (req: Request, res: Response) => {
-      const reqParam = this.validateQuery(req, res, VacancyGetSchema);
-      if (!reqParam) {
-        return;
-      }
+    this.router.get(
+      "/v1/vacancies",
+      this.mustAuthorized,
+      async (req: Request, res: Response) => {
+        const reqParam = this.validateQuery(req, res, VacancyGetSchema);
+        if (!reqParam) {
+          return;
+        }
 
-      const paginator = this.paginate(reqParam.page, reqParam.limit);
-      const filters = this.vacancyFilter.handleFilter(reqParam);
+        const paginator = this.paginate(reqParam.page, reqParam.limit);
+        const filters = await this.vacancyFilter.handleFilter(
+          reqParam,
+          res.locals,
+        );
 
-      const [vacancies, count] = await Promise.all([
-        this.vacancyService.getAllVacancies(filters, paginator),
-        this.vacancyService.count(filters),
-      ]);
-      if (this.isServiceError(res, vacancies)) {
-        return;
-      }
+        const [vacancies, count] = await Promise.all([
+          this.vacancyService.getAllVacancies(filters, paginator),
+          this.vacancyService.count(filters),
+        ]);
+        if (this.isServiceError(res, vacancies)) {
+          return;
+        }
 
-      return this.handleSuccess(
-        res,
-        {
-          message: "Success getting vacancies",
-          data: vacancies,
-        },
-        this.handlePagination(paginator, count),
-      );
-    });
+        return this.handleSuccess(
+          res,
+          {
+            message: "Success getting vacancies",
+            data: vacancies,
+          },
+          this.handlePagination(paginator, count),
+        );
+      },
+    );
   }
 
   private async getVacancyById() {
@@ -98,10 +110,15 @@ class VacancyController extends BaseController {
           return;
         }
 
+        const vacancy = await this.vacancyService.getVacancyById(newVacancy);
+        if (this.isServiceError(res, vacancy)) {
+          return;
+        }
+
         return this.handleSuccess(res, {
           statusCode: StatusCreated,
           message: "Success creating vacancy",
-          data: newVacancy,
+          data: vacancy,
         });
       },
     );
@@ -152,7 +169,7 @@ class VacancyController extends BaseController {
         }
 
         return this.handleSuccess(res, {
-          statusCode: StatusCreated,
+          statusCode: StatusOk,
           message: "Success updating vacancy status",
           data: vacancy,
         });
@@ -205,7 +222,7 @@ class VacancyController extends BaseController {
         }
 
         return this.handleSuccess(res, {
-          statusCode: StatusCreated,
+          statusCode: StatusOk,
           message: "Success updating vacancy",
           data: vacancy,
         });

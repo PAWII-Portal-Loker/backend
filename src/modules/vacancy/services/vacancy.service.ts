@@ -83,8 +83,8 @@ class VacancyService extends BaseMongoService<VacancyDto> {
       position: data.position,
       thumbnailUrl: data.thumbnailUrl ?? undefined,
       description: data.description,
-      is_closed: false,
-      applied_count: 0,
+      isClosed: false,
+      appliedCount: 0,
     };
 
     const newVacancy = await this.create(createVacancyPayload);

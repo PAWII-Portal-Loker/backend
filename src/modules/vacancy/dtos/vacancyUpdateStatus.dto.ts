@@ -7,4 +7,6 @@ export interface VacancyUpdateStatusDto {
 export const VacancyUpdateStatusSchema: Yup.Schema<VacancyUpdateStatusDto> =
   Yup.object({
     isClosed: Yup.boolean().required("is_closed is required"),
-  });
+  })
+    .noUnknown(true)
+    .strict(true);

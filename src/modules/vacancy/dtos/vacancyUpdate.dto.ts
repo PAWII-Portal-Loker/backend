@@ -30,9 +30,11 @@ export const VacancyUpdateSchema: Yup.Schema<VacancyUpdateDto> = Yup.object({
     .min(3, "position must be at least 3 characters")
     .max(100, "position must be at most 100 characters"),
 
-  thumbnailUrl: Yup.string().optional().url("Invalid thumbnail_url format"),
+  thumbnailUrl: Yup.string().optional(),
 
   description: Yup.string()
     .required("description is required")
     .min(10, "description must be at least 10 characters"),
-});
+})
+  .noUnknown(true)
+  .strict(true);

@@ -1,3 +1,4 @@
+import { Locals } from "express";
 import { FilterQuery } from "mongoose";
 
 export type Response<T = unknown> = {
@@ -82,3 +83,5 @@ export type BaseFile = {
 export type UploadedFile = {
   path: string;
 };
+
+export type ResLocals = Record<string, unknown> & Locals;

@@ -6,8 +6,9 @@ import UserController from "@user/controllers/user.controller";
 import AuthController from "@auth/controllers/auth.controller";
 import CompanyController from "@company/controllers/company.controller";
 import ConstsController from "@enums/contollers/consts.controller";
-import AWSS3Instance from "./integrations/aws/awsS3Instance";
 import FileUploadController from "@fileUpload/controllers/fileUpload.controller";
+import VacancyController from "@vacancy/controllers/vacancy.controller";
+import AWSS3Instance from "@integrations/aws/awsS3Instance";
 
 new MongoDatabase({
   dbHost: env.get("MONGO_DB_HOST"),
@@ -32,6 +33,7 @@ router.app.use("/", new FileUploadController().getRouter());
 router.app.use("/", new UserController().getRouter());
 router.app.use("/", new AuthController().getRouter());
 router.app.use("/", new CompanyController().getRouter());
+router.app.use("/", new VacancyController().getRouter());
 
 router.app.get("/", (_, res) => {
   res.send("Hello from USER service");

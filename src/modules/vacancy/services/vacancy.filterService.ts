@@ -1,39 +1,49 @@
 import BaseFilter from "@base/filter";
-import { DataFilter } from "@types";
+import { DataFilter, ResLocals } from "@types";
 import { VacancyReqDto } from "@vacancy/dtos/vacancyReq.dto";
-import VacancyService from "./vacancy.service";
 import { isValidObjectId } from "mongoose";
+import CompanyService from "@company/services/company.service";
 
 class VacancyFilter extends BaseFilter {
-  private vacancyService = new VacancyService();
+  private companyService = new CompanyService();
 
   constructor() {
     super();
   }
 
-  public handleFilter(reqParam: VacancyReqDto): DataFilter<VacancyReqDto> {
+  public async handleFilter(
+    reqParam: VacancyReqDto,
+    locals: ResLocals,
+  ): Promise<DataFilter<VacancyReqDto>> {
     const query = {};
 
-    this.safelyAssign(query, "ownedBy", reqParam.position, ({ value }) => {
-      if (isValidObjectId(value)) {
-        return {
-          companyId: value,
-        };
-      }
+    await this.safelyAssign(
+      query,
+      "ownedBy",
+      reqParam.ownedBy,
+      async (props) => {
+        if (isValidObjectId(props.value)) {
+          return {
+            companyId: props.value,
+          };
+        }
 
-      return null;
-    });
+        return null;
+      },
+    );
 
-    this.safelyAssign(query, "ownerByMe", reqParam.position, ({ value }) => {
-      if (value === true) {
-        // return {
-        //   companyId: value,
-        // };
-        // todo: lanjutin ini
-      }
+    await this.safelyAssign(
+      query,
+      "ownedByMe",
+      reqParam.ownedByMe,
+      async (props) => {
+        if (props.value === true) {
+          return this.handleFilterOwnedByMe(locals.userId as string);
+        }
 
-      return null;
-    });
+        return null;
+      },
+    );
 
     this.safelyAssign(query, "position", reqParam.position);
     this.safelyAssign(query, "jobType", reqParam.jobType);
@@ -44,6 +54,17 @@ class VacancyFilter extends BaseFilter {
     const sorter = this.handleSorter(sortKey, reqParam?.sort, reqParam?.order);
 
     return { query, sorter };
+  }
+
+  private async handleFilterOwnedByMe(userId: string) {
+    const company = await this.companyService.findOne({ userId });
+    if (!company) {
+      return null;
+    }
+
+    return {
+      companyId: company._id,
+    };
   }
 }
 
