@@ -36,7 +36,9 @@ router.app.use("/", new CompanyController().getRouter());
 router.app.use("/", new VacancyController().getRouter());
 
 router.app.get("/", (_, res) => {
-  res.send("Hello from USER service");
+  res.json({
+    message: "Welcome to the Portal Loker API",
+  });
 });
 
 router.listen();

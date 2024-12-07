@@ -7,6 +7,12 @@ export default function corsHandler() {
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept, x-access-token, x-refresh-token, x-device-id, x-user-id",
     );
+    res.header(
+      "Access-Control-Expose-Headers",
+      "x-access-token, x-refresh-token, x-user-id",
+    );
+    res.header("Access-Control-Max-Age", "86400");
+
     next();
   };
 }
