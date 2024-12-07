@@ -1,11 +1,10 @@
-import { CompanyDto } from "@company/dtos/company.dto";
+import { CompanyResDto } from "@company/dtos/companyRes.dto";
 import { IncomeTypeEnums } from "@enums/consts/incomeTypes";
 import { JobTypeEnums } from "@enums/consts/jobTypes";
-import { Timestamps } from "@types";
-import { Document } from "mongoose";
 
-export interface VacancyDto extends Document, Timestamps {
-  companyId: CompanyDto["_id"];
+export interface VacancyResDto {
+  id: string;
+  company: CompanyResDto;
   jobType: JobTypeEnums;
   incomeType: IncomeTypeEnums;
   position: string;
@@ -13,4 +12,7 @@ export interface VacancyDto extends Document, Timestamps {
   description: string;
   appliedCount: number;
   isClosed: boolean;
+  isApplied?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
