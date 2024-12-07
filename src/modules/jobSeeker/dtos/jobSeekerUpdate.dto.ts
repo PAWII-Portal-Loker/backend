@@ -1,14 +1,13 @@
 import { LAST_EDUCATION_TYPE } from '@enums/consts/lastEducationTypes';
 import * as Yup from 'yup';
-
-export interface JobSeekerCreateDto {
+export interface JobSeekerUpdateDto {
     name: string;
     lastEducation: string;
     major: string;
     gpa: number;
 }
 
-export const JobSeekerCreateSchema: Yup.Schema<JobSeekerCreateDto> = Yup.object({
+export const JobSeekerUpdateSchema: Yup.Schema<JobSeekerUpdateDto> = Yup.object({
     name: Yup.string()
         .required('name is required')
         .min(3, 'name must be at least 3 characters')
@@ -28,7 +27,5 @@ export const JobSeekerCreateSchema: Yup.Schema<JobSeekerCreateDto> = Yup.object(
         .required('gpa is required')
         .test('is-decimal', 'gpa must be decimal', value => {
             return /^\d+\.\d+$/.test(value.toString());
-        })
-})
-    .noUnknown(true)
-    .strict(true);
+        }),
+}).noUnknown(true).strict(true);

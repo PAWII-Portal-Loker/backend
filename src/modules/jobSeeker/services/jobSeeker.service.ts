@@ -3,6 +3,7 @@ import { ROLE_JOB_SEEKER } from "@enums/consts/roles";
 import { JobSeekerDto } from "@jobSeeker/dtos/jobSeeker.dto";
 import { JobSeekerCreateDto } from "@jobSeeker/dtos/jobSeekerCreate.dto";
 import { JobSeekerResDto } from "@jobSeeker/dtos/jobSeekerRes.dto";
+import { JobSeekerUpdateDto } from "@jobSeeker/dtos/jobSeekerUpdate.dto";
 import { JobSeekerModel } from "@jobSeeker/models/jobSeeker.model";
 import { jobSeekerMapper } from "@mapper/jobseeker.mapper";
 import { DataFilter, Pagination, ServiceError } from "@types";
@@ -98,7 +99,7 @@ class JobSeekerService extends BaseMongoService<JobSeekerDto> {
   }
 
   public async updateJobSeeker(
-    data: Partial<JobSeekerCreateDto>,
+    data: Partial<JobSeekerUpdateDto>,
     userId: string,
   ): Promise<string | ServiceError> {
     const jobSeeker = await this.findOne({ userId });
@@ -115,7 +116,7 @@ class JobSeekerService extends BaseMongoService<JobSeekerDto> {
         gpa: data.gpa,
       },
     );
-    console.log(updatedJobSeeker);
+
     if (!updatedJobSeeker){
       return this.throwError("Error updating job seeker", StatusBadRequest);
     }
