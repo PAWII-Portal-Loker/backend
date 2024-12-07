@@ -7,7 +7,7 @@ import {
   VacancyCreateDto,
   VacancyCreateSchema,
 } from "@vacancy/dtos/vacancyCreate.dto";
-import { StatusCreated, StatusForbidden, StatusOk } from "@utils/statusCodes";
+import { StatusCreated, StatusForbidden, StatusOk } from "@consts/statusCodes";
 import {
   VacancyUpdateStatusDto,
   VacancyUpdateStatusSchema,

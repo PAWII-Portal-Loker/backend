@@ -7,7 +7,7 @@ import {
   JobSeekerCreateDto,
   JobSeekerCreateSchema,
 } from "@jobSeeker/dtos/jobSeekerCreate.dto";
-import { StatusCreated } from "@utils/statusCodes";
+import { StatusCreated } from "@consts/statusCodes";
 import {
   JobSeekerUpdateDto,
   JobSeekerUpdateSchema,

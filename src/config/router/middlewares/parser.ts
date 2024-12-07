@@ -1,6 +1,6 @@
 import { baseErrorRes } from "@consts";
 import { BaseFile } from "@types";
-import { StatusBadRequest } from "@utils/statusCodes";
+import { StatusBadRequest } from "@consts/statusCodes";
 import { NextFunction, Request, Response } from "express";
 import * as formidable from "formidable";
 import fs from "fs";

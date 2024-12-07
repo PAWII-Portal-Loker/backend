@@ -7,7 +7,7 @@ import {
   CompanyCreateDto,
   CompanyCreateSchema,
 } from "@company/dtos/companyCreate.dto";
-import { StatusCreated } from "@utils/statusCodes";
+import { StatusCreated } from "@consts/statusCodes";
 import {
   CompanyUpdateDto,
   CompanyUpdateSchema,

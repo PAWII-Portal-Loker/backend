@@ -1,5 +1,5 @@
 import { baseErrorRes } from "@consts";
-import { StatusUnauthorized } from "@utils/statusCodes";
+import { StatusUnauthorized } from "@consts/statusCodes";
 import { NextFunction, Request, Response } from "express";
 
 const whitelistedRoutes = ["GET:/v1/files"];

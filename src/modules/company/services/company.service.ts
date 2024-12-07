@@ -4,7 +4,7 @@ import {
   StatusBadRequest,
   StatusConflict,
   StatusNotFound,
-} from "@utils/statusCodes";
+} from "@consts/statusCodes";
 import { isValidObjectId } from "mongoose";
 import { CompanyModel } from "../models/company.model";
 import { CompanyDto } from "../dtos/company.dto";

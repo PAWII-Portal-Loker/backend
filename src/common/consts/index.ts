@@ -1,4 +1,4 @@
-import { StatusOk } from "@utils/statusCodes";
+import { StatusOk } from "@consts/statusCodes";
 import { shouldBeNumber } from "@utils/yup";
 import * as Yup from "yup";
 

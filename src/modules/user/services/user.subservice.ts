@@ -1,6 +1,6 @@
 import { UserDto } from "@user/dtos/user.dto";
 import { ServiceError } from "@types";
-import { StatusBadRequest, StatusNotFound } from "@utils/statusCodes";
+import { StatusBadRequest, StatusNotFound } from "@consts/statusCodes";
 import BaseMongoService from "@base/mongoService";
 import { UserModel } from "@user/models/user.model";
 import { RolesEnum } from "@enums/consts/roles";

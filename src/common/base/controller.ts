@@ -1,6 +1,6 @@
 import RedisDatabase from "@config/databases/redis";
 import { Response as DataResponse, Pagination, ServiceError } from "@types";
-import { StatusBadRequest } from "@utils/statusCodes";
+import { StatusBadRequest } from "@consts/statusCodes";
 import {
   Request as ExpressRequest,
   Response as ExpressResponse,

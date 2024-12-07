@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { UserCreateDto, UserCreateSchema } from "@user/dtos/userCreate.dto";
 import UserService from "@user/services/user.service";
 import BaseController from "@base/controller";
-import { StatusCreated } from "@utils/statusCodes";
+import { StatusCreated } from "@consts/statusCodes";
 import UserFilter from "@user/filters/user.filter";
 import { UserGetSchema } from "@user/dtos/userReq.dto";
 
