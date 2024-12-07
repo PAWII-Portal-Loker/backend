@@ -3,7 +3,7 @@ import CompanyService from "@company/services/company.service";
 import { vacancyMapper } from "@mapper/vacancy.mapper";
 import { DataFilter, Pagination, ServiceError } from "@types";
 import { isIdEquals } from "@utils/compare";
-import { StatusBadRequest, StatusNotFound } from "@utils/statusCodes";
+import { StatusBadRequest, StatusNotFound } from "@consts/statusCodes";
 import { VacancyDto } from "@vacancy/dtos/vacancy.dto";
 import { VacancyCreateDto } from "@vacancy/dtos/vacancyCreate.dto";
 import { VacancyResDto } from "@vacancy/dtos/vacancyRes.dto";

@@ -1,6 +1,6 @@
 import { baseErrorRes } from "@consts";
 import { BaseFile } from "@types";
-import { StatusBadRequest } from "@utils/statusCodes";
+import { StatusBadRequest } from "@consts/statusCodes";
 import { NextFunction, Request, Response } from "express";
 import * as formidable from "formidable";
 import fs from "fs";
@@ -49,7 +49,6 @@ export default function parseFormData(
 
 function throwBadRequests(res: Response, msg?: string) {
   const errorRes = Object.assign({}, baseErrorRes, {
-    statusCode: StatusBadRequest,
     message: msg ?? "Bad Request",
   });
 

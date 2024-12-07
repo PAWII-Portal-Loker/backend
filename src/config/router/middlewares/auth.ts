@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { StatusUnauthorized } from "@utils/statusCodes";
+import { StatusUnauthorized } from "@consts/statusCodes";
 import {
   decodeToken,
   generateAccessToken,

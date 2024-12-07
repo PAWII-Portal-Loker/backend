@@ -2,7 +2,7 @@ import BaseMongoService from "@base/mongoService";
 import CompanyService from "@company/services/company.service";
 import { ServiceError } from "@types";
 import { isIdEquals } from "@utils/compare";
-import { StatusNotFound } from "@utils/statusCodes";
+import { StatusNotFound } from "@consts/statusCodes";
 import { VacancyDto } from "@vacancy/dtos/vacancy.dto";
 import { VacancyModel } from "@vacancy/models/vacancy.model";
 

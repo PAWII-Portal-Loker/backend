@@ -13,7 +13,7 @@ import { SignOutDto } from "../dtos/signOut.dto";
 import RedisService from "@base/redisService";
 import { IsLoginDto } from "../dtos/isLogin.dto";
 import UserService from "@user/services/user.service";
-import { StatusNotFound } from "@utils/statusCodes";
+import { StatusNotFound } from "@consts/statusCodes";
 
 class AuthService extends RedisService {
   private userService = new UserService();
