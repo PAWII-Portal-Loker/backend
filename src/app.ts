@@ -9,6 +9,7 @@ import ConstsController from "@enums/contollers/consts.controller";
 import FileUploadController from "@fileUpload/controllers/fileUpload.controller";
 import VacancyController from "@vacancy/controllers/vacancy.controller";
 import AWSS3Instance from "@integrations/aws/awsS3Instance";
+import JobSeekerController from "@jobSeeker/controllers/jobSeeker.controller";
 
 new MongoDatabase({
   dbHost: env.get("MONGO_DB_HOST"),
@@ -28,12 +29,13 @@ AWSS3Instance.getInstance().initialize({
 
 const router = new Router();
 
-router.app.use("/", new ConstsController().getRouter());
-router.app.use("/", new FileUploadController().getRouter());
-router.app.use("/", new UserController().getRouter());
-router.app.use("/", new AuthController().getRouter());
-router.app.use("/", new CompanyController().getRouter());
-router.app.use("/", new VacancyController().getRouter());
+router.app.use("/api/", new ConstsController().getRouter());
+router.app.use("/api/", new FileUploadController().getRouter());
+router.app.use("/api/", new UserController().getRouter());
+router.app.use("/api/", new AuthController().getRouter());
+router.app.use("/api/", new CompanyController().getRouter());
+router.app.use("/api/", new JobSeekerController().getRouter());
+router.app.use("/api/", new VacancyController().getRouter());
 
 router.app.get("/", (_, res) => {
   res.json({
