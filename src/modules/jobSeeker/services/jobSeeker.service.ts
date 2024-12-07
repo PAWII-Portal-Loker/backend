@@ -9,7 +9,11 @@ import { jobSeekerMapper } from "@mapper/jobseeker.mapper";
 import { DataFilter, Pagination, ServiceError } from "@types";
 import UserService from "@user/services/user.service";
 import { isIdEquals } from "@utils/compare";
-import { StatusBadRequest, StatusConflict, StatusNotFound } from "@utils/statusCodes";
+import {
+  StatusBadRequest,
+  StatusConflict,
+  StatusNotFound,
+} from "@utils/statusCodes";
 import { isValidObjectId } from "mongoose";
 
 class JobSeekerService extends BaseMongoService<JobSeekerDto> {
@@ -41,8 +45,8 @@ class JobSeekerService extends BaseMongoService<JobSeekerDto> {
       return jobSeekerMapper(
         jobSeeker,
         users.find((u) => isIdEquals(u._id, jobSeeker.userId))!,
-      )
-    })
+      );
+    });
   }
 
   public async getJobSeekerById(
@@ -75,12 +79,12 @@ class JobSeekerService extends BaseMongoService<JobSeekerDto> {
     }
 
     const createJobSeekerPayload = {
-      userId, 
+      userId,
       name: data.name,
       lastEducation: data.lastEducation,
       major: data.major,
       gpa: data.gpa,
-    }
+    };
 
     const [newJobSeeker, updatedUser] = await Promise.all([
       this.create(createJobSeekerPayload),
@@ -92,7 +96,7 @@ class JobSeekerService extends BaseMongoService<JobSeekerDto> {
     }
     if (!updatedUser) {
       this.delete({ _id: newJobSeeker.id });
-      return this.throwError("Error updating user", StatusBadRequest)
+      return this.throwError("Error updating user", StatusBadRequest);
     }
 
     return newJobSeeker._id as string;
@@ -117,7 +121,7 @@ class JobSeekerService extends BaseMongoService<JobSeekerDto> {
       },
     );
 
-    if (!updatedJobSeeker){
+    if (!updatedJobSeeker) {
       return this.throwError("Error updating job seeker", StatusBadRequest);
     }
 
