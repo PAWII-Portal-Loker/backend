@@ -12,6 +12,7 @@ import BasePagination from "./pagination";
 import { baseErrorRes, baseSuccessRes } from "@consts";
 import AuthMiddleware from "@config/router/middlewares/auth";
 import Redis from "ioredis";
+import { toSnakeCase } from "@utils/caseConvert";
 
 class BaseController extends BasePagination {
   protected router = Router();
@@ -57,7 +58,7 @@ class BaseController extends BasePagination {
 
       const strictParamsErrors = unknownParams.map((param) => {
         return {
-          field: param,
+          field: toSnakeCase(param),
           message: `${param} is not allowed`,
         };
       });
@@ -65,7 +66,7 @@ class BaseController extends BasePagination {
       const schemaErrors = error.inner
         .filter((err) => err.path !== "")
         .map((err) => ({
-          field: err.path,
+          field: toSnakeCase(err.path as string),
           message: err.message,
         }));
 

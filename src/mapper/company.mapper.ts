@@ -5,11 +5,11 @@ import { CompanyResDto } from "@company/dtos/companyRes.dto";
 
 export function companyMapper(
   company: CompanyDto,
-  user: UserDto,
+  user?: UserDto,
 ): CompanyResDto {
   return {
     id: (company?._id as string) ?? "",
-    user: userMapper(user),
+    user: user && userMapper(user),
     companyName: company?.companyName ?? "",
     companyType: company?.companyType ?? "",
     earlyWorkingHour: company?.earlyWorkingHour ?? "",

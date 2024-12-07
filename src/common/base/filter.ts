@@ -5,6 +5,13 @@ import { toCamelCase } from "@utils/caseConvert";
 class BaseFilter {
   protected filter(param: FilterByKey) {
     const isCaseSensitive = param.isCaseSensitive || false;
+
+    if (typeof param.value === "boolean") {
+      return {
+        [param.key]: param.value,
+      };
+    }
+
     return {
       [param.key]: {
         $regex: param.value,
@@ -37,13 +44,14 @@ class BaseFilter {
     return sorter;
   }
 
-  protected isSafe(input: string | undefined): boolean {
-    if (!input) return false;
+  protected isSafe(input: FilterByKey["value"]): boolean {
+    if (input === "" || input === null || input === undefined) return false;
+    if (typeof input === "boolean") return true;
 
     const injectionPatterns = [
       /\$[a-zA-Z]+/, // Detects MongoDB operators like $ne, $gt, $or, etc.
       /[\{\}\[\]]/, // Detects curly braces {} and square brackets [].
-      /(sleep|eval|system|exec)/i, // Common functions used in injection attacks.
+      /(sleep|eval|exec)/i, // Common functions used in injection attacks.
       /\bfunction\b|\breturn\b/i, // JavaScript code snippets.
       /;/, // Semicolons.
       /\$where/, // $where operator.
@@ -51,27 +59,31 @@ class BaseFilter {
       /\/\*/, // Start of block comment.
       /\*\//, // End of block comment.
       /\bnew\b\s+\bFunction\b/i, // Usage of new Function.
-      /\bprocess\b/, // Accessing process object.
-      /\brequire\b/, // Usage of require function.
-      /\bexports\b/, // Accessing exports.
-      /\bmodule\b/, // Accessing module object.
     ];
 
     return !injectionPatterns.some((pattern) => pattern.test(input));
   }
 
-  protected safelyAssign(
+  protected async safelyAssign(
     filters: Record<string, unknown>,
-    key: string,
-    value: string | undefined,
-    filterCallback?: (key: string, value: string) => Record<string, unknown>,
+    key: FilterByKey["key"],
+    value: FilterByKey["value"],
+    filterCallback?: (
+      cbParam: FilterByKey,
+    ) => Promise<Record<string, unknown> | null>,
   ) {
-    if (!value || !this.isSafe(value)) {
+    if (
+      value === "" ||
+      value === null ||
+      value === undefined ||
+      !this.isSafe(value)
+    ) {
       return;
     }
 
     if (filterCallback) {
-      Object.assign(filters, filterCallback(key, value));
+      const callbackResult = await filterCallback({ key, value });
+      if (callbackResult) Object.assign(filters, callbackResult);
       return;
     }
 
@@ -82,7 +94,7 @@ class BaseFilter {
 
 interface FilterByKey {
   key: string;
-  value: string | undefined;
+  value: string | boolean | undefined;
   isCaseSensitive?: boolean;
 }
 

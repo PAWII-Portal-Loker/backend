@@ -96,10 +96,15 @@ class CompanyController extends BaseController {
           return;
         }
 
+        const company = await this.companyService.getCompanyById(newCompany);
+        if (this.isServiceError(res, company)) {
+          return;
+        }
+
         return this.handleSuccess(res, {
           statusCode: StatusCreated,
           message: "Success creating company",
-          data: newCompany,
+          data: company,
         });
       },
     );

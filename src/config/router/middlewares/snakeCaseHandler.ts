@@ -1,7 +1,7 @@
 import { ObjToSnakeCase } from "@utils/caseConvert";
 import { NextFunction, Request, Response } from "express";
 
-export function snakeCaseHandler() {
+export default function snakeCaseHandler() {
   return (_: Request, res: Response, next: NextFunction) => {
     const originalSend = res.send.bind(res);
 
