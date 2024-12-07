@@ -1,8 +1,8 @@
 import { baseErrorRes } from "@consts";
-import { StatusBadRequest } from "@utils/statusCodes";
+import { StatusBadRequest } from "@consts/statusCodes";
 import express, { NextFunction, Request, Response } from "express";
 
-export function jsonParseHandler() {
+export default function jsonParseHandler() {
   return (req: Request, res: Response, next: NextFunction) => {
     express.json()(req, res, (err) => {
       if (!err) {
@@ -15,7 +15,6 @@ export function jsonParseHandler() {
 
       return res.status(StatusBadRequest).json(
         Object.assign({}, baseErrorRes, {
-          statusCode: StatusBadRequest,
           message: "Invalid JSON body",
         }),
       );

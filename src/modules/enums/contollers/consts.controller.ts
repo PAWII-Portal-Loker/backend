@@ -11,6 +11,7 @@ class ConstsController extends BaseController {
     this.getAllCompanyTypes();
     this.getAllIncomeTypes();
     this.getAllJobTypes();
+    this.getAllLastEducationTypes();
     this.getAllRoles();
   }
 
@@ -19,6 +20,7 @@ class ConstsController extends BaseController {
       const companyTypes = this.constsService.getAllCompanyTypes();
       const incomeTypes = this.constsService.getAllIncomeTypes();
       const jobTypes = this.constsService.getAllJobTypes();
+      const lastEducationTypes = this.constsService.getAllLastEducationTypes();
       const roles = this.constsService.getAllRoles();
 
       return this.handleSuccess(res, {
@@ -27,6 +29,7 @@ class ConstsController extends BaseController {
           companyTypes,
           incomeTypes,
           jobTypes,
+          lastEducationTypes,
           roles,
         },
       });
@@ -69,6 +72,18 @@ class ConstsController extends BaseController {
 
       return this.handleSuccess(res, {
         message: "Success getting job types",
+        data: result,
+      });
+    });
+  }
+
+  private getAllLastEducationTypes(){
+    this.router.get("/v1/consts/last-education-types", (req: Request, res: Response) => {
+      const keyword = req.query["keyword"] as string;
+      const result = this.constsService.getAllLastEducationTypes(keyword);
+
+      return this.handleSuccess(res, {
+        message: "Success getting last education types",
         data: result,
       });
     });

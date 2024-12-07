@@ -3,7 +3,7 @@ import * as Yup from "yup";
 export interface UserCreateDto {
   email: string;
   password: string;
-  wa_number: string;
+  waNumber: string;
 }
 
 export const UserCreateSchema: Yup.Schema<UserCreateDto> = Yup.object({
@@ -16,7 +16,7 @@ export const UserCreateSchema: Yup.Schema<UserCreateDto> = Yup.object({
     .min(6, "password must be at least 6 characters")
     .max(100, "password must be at most 100 characters"),
 
-  wa_number: Yup.string()
+  waNumber: Yup.string()
     .required("wa_number is required")
     .matches(/^[0-9]+$/, "wa_number must be a number")
     .min(10, "wa_number must be at least 10 characters")

@@ -3,7 +3,7 @@ import { UserResDto } from "@user/dtos/userRes.dto";
 
 export interface CompanyResDto {
   id: string;
-  user: UserResDto;
+  user?: UserResDto;
   companyType: CompanyTypeEnums;
   companyName: string;
   foundingDate: Date;

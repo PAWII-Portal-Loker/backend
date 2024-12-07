@@ -4,7 +4,7 @@ import {
   StatusBadRequest,
   StatusConflict,
   StatusNotFound,
-} from "@utils/statusCodes";
+} from "@consts/statusCodes";
 import { isValidObjectId } from "mongoose";
 import { CompanyModel } from "../models/company.model";
 import { CompanyDto } from "../dtos/company.dto";
@@ -15,6 +15,7 @@ import { CompanyCreateDto } from "../dtos/companyCreate.dto";
 import moment from "moment";
 import { companyMapper } from "@mapper/company.mapper";
 import { ROLE_COMPANY } from "@enums/consts/roles";
+import { CompanyUpdateDto } from "@company/dtos/companyUpdate.dto";
 
 class CompanyService extends BaseMongoService<CompanyDto> {
   private userService = new UserService();
@@ -80,12 +81,12 @@ class CompanyService extends BaseMongoService<CompanyDto> {
 
     const createCompanyPayload = {
       userId: userId,
-      companyType: data.company_type,
-      companyName: data.company_name,
-      foundingDate: moment(data.founding_date).toDate(),
-      employeeTotal: data.employee_total,
-      earlyWorkingHour: data.early_working_hour,
-      endWorkingHour: data.end_working_hour,
+      companyType: data.companyType,
+      companyName: data.companyName,
+      foundingDate: moment(data.foundingDate).toDate(),
+      employeeTotal: data.employeeTotal,
+      earlyWorkingHour: data.earlyWorkingHour,
+      endWorkingHour: data.endWorkingHour,
     };
 
     const [newCompany, updatedUser] = await Promise.all([
@@ -105,7 +106,7 @@ class CompanyService extends BaseMongoService<CompanyDto> {
   }
 
   public async updateCompany(
-    data: Partial<CompanyCreateDto>,
+    data: Partial<CompanyUpdateDto>,
     userId: string,
   ): Promise<string | ServiceError> {
     const company = await this.findOne({ userId });
@@ -116,15 +117,14 @@ class CompanyService extends BaseMongoService<CompanyDto> {
     const updatedCompany = await this.update(
       { _id: company._id },
       {
-        companyType: data.company_type,
-        companyName: data.company_name,
-        foundingDate: moment(data.founding_date).toDate(),
-        employeeTotal: data.employee_total,
-        earlyWorkingHour: data.early_working_hour,
-        endWorkingHour: data.end_working_hour,
+        companyType: data.companyType,
+        companyName: data.companyName,
+        foundingDate: moment(data.foundingDate).toDate(),
+        employeeTotal: data.employeeTotal,
+        earlyWorkingHour: data.earlyWorkingHour,
+        endWorkingHour: data.endWorkingHour,
       },
     );
-    console.log(updatedCompany);
     if (!updatedCompany) {
       return this.throwError("Error updating company", StatusBadRequest);
     }

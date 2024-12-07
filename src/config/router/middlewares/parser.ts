@@ -1,12 +1,16 @@
 import { baseErrorRes } from "@consts";
 import { BaseFile } from "@types";
-import { StatusBadRequest } from "@utils/statusCodes";
+import { StatusBadRequest } from "@consts/statusCodes";
 import { NextFunction, Request, Response } from "express";
 import * as formidable from "formidable";
 import fs from "fs";
 import path from "path";
 
-export function parseFormData(req: Request, res: Response, next: NextFunction) {
+export default function parseFormData(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   const form = new formidable.IncomingForm();
   form.parse(req, async (err, _, files) => {
     if (err) {
@@ -45,7 +49,6 @@ export function parseFormData(req: Request, res: Response, next: NextFunction) {
 
 function throwBadRequests(res: Response, msg?: string) {
   const errorRes = Object.assign({}, baseErrorRes, {
-    statusCode: StatusBadRequest,
     message: msg ?? "Bad Request",
   });
 

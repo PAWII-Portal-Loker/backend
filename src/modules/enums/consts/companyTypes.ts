@@ -1,10 +1,10 @@
 export type CompanyTypeEnums = string;
 
-export const COMPANY_TYPE_STARTUP: CompanyTypeEnums = "STARTUP";
-export const COMPANY_TYPE_GOVERNMENT: CompanyTypeEnums = "GOVERNMENT";
-export const COMPANY_TYPE_NON_PROFIT: CompanyTypeEnums = "NON_PROFIT";
-export const COMPANY_TYPE_FOREIGN: CompanyTypeEnums = "FOREIGN";
-export const COMPANY_TYPE_OTHER: CompanyTypeEnums = "OTHER";
+export const COMPANY_TYPE_STARTUP: CompanyTypeEnums = "Startup";
+export const COMPANY_TYPE_GOVERNMENT: CompanyTypeEnums = "Government";
+export const COMPANY_TYPE_NON_PROFIT: CompanyTypeEnums = "Non-Profit";
+export const COMPANY_TYPE_FOREIGN: CompanyTypeEnums = "Foreign";
+export const COMPANY_TYPE_OTHER: CompanyTypeEnums = "Other";
 
 export const COMPANY_TYPES = [
   COMPANY_TYPE_STARTUP,

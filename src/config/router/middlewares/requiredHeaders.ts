@@ -1,10 +1,10 @@
 import { baseErrorRes } from "@consts";
-import { StatusUnauthorized } from "@utils/statusCodes";
+import { StatusUnauthorized } from "@consts/statusCodes";
 import { NextFunction, Request, Response } from "express";
 
 const whitelistedRoutes = ["GET:/v1/files"];
 
-export function requiredHeaders() {
+export default function requiredHeaders() {
   return (req: Request, res: Response, next: NextFunction) => {
     const isWhitelisted = whitelistedRoutes.some((prefix) => {
       const [method, path] = prefix.split(":");

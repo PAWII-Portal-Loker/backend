@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import { BaseFile } from "@types";
-import { StatusBadRequest, StatusNoContent } from "@utils/statusCodes";
+import { StatusNoContent } from "@consts/statusCodes";
 import { MB_10 } from "@consts";
-import { parseFormData } from "@config/router/middlewares/parser";
 import AWSS3Service from "@integrations/aws/awsS3Service";
+import parseFormData from "@config/router/middlewares/parser";
 
 class FileUploadController extends BaseController {
   private awsS3Service = new AWSS3Service();
@@ -22,7 +22,6 @@ class FileUploadController extends BaseController {
       if (!key) {
         return this.handleError(res, {
           message: "Invalid file key",
-          statusCode: StatusBadRequest,
         });
       }
 
@@ -44,7 +43,6 @@ class FileUploadController extends BaseController {
         if (!files || !files.length) {
           return this.handleError(res, {
             message: "Invalid file(s) uploaded",
-            statusCode: StatusBadRequest,
           });
         }
 
@@ -52,7 +50,6 @@ class FileUploadController extends BaseController {
           if (file.size > MB_10) {
             return this.handleError(res, {
               message: "Some files exceed the 10MB limit",
-              statusCode: StatusBadRequest,
             });
           }
         }
@@ -78,7 +75,6 @@ class FileUploadController extends BaseController {
         if (!key) {
           return this.handleError(res, {
             message: "Invalid file key",
-            statusCode: StatusBadRequest,
           });
         }
 

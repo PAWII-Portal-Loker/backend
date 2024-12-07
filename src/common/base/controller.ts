@@ -1,6 +1,6 @@
 import RedisDatabase from "@config/databases/redis";
 import { Response as DataResponse, Pagination, ServiceError } from "@types";
-import { StatusBadRequest } from "@utils/statusCodes";
+import { StatusBadRequest } from "@consts/statusCodes";
 import {
   Request as ExpressRequest,
   Response as ExpressResponse,
@@ -12,6 +12,7 @@ import BasePagination from "./pagination";
 import { baseErrorRes, baseSuccessRes } from "@consts";
 import AuthMiddleware from "@config/router/middlewares/auth";
 import Redis from "ioredis";
+import { toSnakeCase } from "@utils/caseConvert";
 
 class BaseController extends BasePagination {
   protected router = Router();
@@ -57,7 +58,7 @@ class BaseController extends BasePagination {
 
       const strictParamsErrors = unknownParams.map((param) => {
         return {
-          field: param,
+          field: toSnakeCase(param),
           message: `${param} is not allowed`,
         };
       });
@@ -65,13 +66,12 @@ class BaseController extends BasePagination {
       const schemaErrors = error.inner
         .filter((err) => err.path !== "")
         .map((err) => ({
-          field: err.path,
+          field: toSnakeCase(err.path as string),
           message: err.message,
         }));
 
       res.status(StatusBadRequest).json(
         Object.assign({}, baseErrorRes, {
-          statusCode: StatusBadRequest,
           message: "Validation Error",
           errors: [...strictParamsErrors, ...schemaErrors],
         }),
