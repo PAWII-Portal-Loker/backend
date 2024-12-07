@@ -77,16 +77,19 @@ class ConstsController extends BaseController {
     });
   }
 
-  private getAllLastEducationTypes(){
-    this.router.get("/v1/consts/last-education-types", (req: Request, res: Response) => {
-      const keyword = req.query["keyword"] as string;
-      const result = this.constsService.getAllLastEducationTypes(keyword);
+  private getAllLastEducationTypes() {
+    this.router.get(
+      "/v1/consts/last-education-types",
+      (req: Request, res: Response) => {
+        const keyword = req.query["keyword"] as string;
+        const result = this.constsService.getAllLastEducationTypes(keyword);
 
-      return this.handleSuccess(res, {
-        message: "Success getting last education types",
-        data: result,
-      });
-    });
+        return this.handleSuccess(res, {
+          message: "Success getting last education types",
+          data: result,
+        });
+      },
+    );
   }
 
   private getAllRoles() {
