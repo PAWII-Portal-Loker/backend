@@ -75,7 +75,7 @@ class AuthController extends BaseController {
         });
 
         return this.handleSuccess(res, {
-          message: "Success signing in",
+          message: "Success signing out",
           data: signOut,
         });
       },
@@ -119,7 +119,7 @@ class AuthController extends BaseController {
           message: "Success signing in",
           data: {
             isLogin,
-            role: userRole,
+            role: isLogin ? userRole : false,
           },
         });
       },
