@@ -53,7 +53,7 @@ class UserService extends BaseMongoService<UserDto> {
     const newUser = await this.create({
       email: data.email,
       password: data.password,
-      waNumber: data.wa_number,
+      waNumber: data.waNumber,
     });
     if (!newUser) {
       return this.throwError("Error creating user", StatusBadRequest);
