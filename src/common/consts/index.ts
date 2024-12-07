@@ -1,4 +1,4 @@
-import { StatusOk } from "@consts/statusCodes";
+import { StatusBadRequest, StatusOk } from "@consts/statusCodes";
 import { shouldBeNumber } from "@utils/yup";
 import * as Yup from "yup";
 
@@ -11,7 +11,7 @@ export const baseSuccessRes = Object.freeze({
 
 export const baseErrorRes = Object.freeze({
   success: false,
-  statusCode: 500,
+  statusCode: StatusBadRequest,
   message: "Error",
   errors: [],
 });

@@ -15,7 +15,6 @@ export default function jsonParseHandler() {
 
       return res.status(StatusBadRequest).json(
         Object.assign({}, baseErrorRes, {
-          statusCode: StatusBadRequest,
           message: "Invalid JSON body",
         }),
       );

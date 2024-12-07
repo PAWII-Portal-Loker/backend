@@ -72,7 +72,6 @@ class BaseController extends BasePagination {
 
       res.status(StatusBadRequest).json(
         Object.assign({}, baseErrorRes, {
-          statusCode: StatusBadRequest,
           message: "Validation Error",
           errors: [...strictParamsErrors, ...schemaErrors],
         }),

@@ -49,7 +49,6 @@ export default function parseFormData(
 
 function throwBadRequests(res: Response, msg?: string) {
   const errorRes = Object.assign({}, baseErrorRes, {
-    statusCode: StatusBadRequest,
     message: msg ?? "Bad Request",
   });
 
