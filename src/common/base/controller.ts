@@ -13,6 +13,8 @@ import { baseErrorRes, baseSuccessRes } from "@consts";
 import AuthMiddleware from "@config/router/middlewares/auth";
 import Redis from "ioredis";
 import { toSnakeCase } from "@utils/caseConvert";
+import allowedRoles from "@config/router/middlewares/authz";
+import { RolesEnum } from "@enums/consts/roles";
 
 class BaseController extends BasePagination {
   protected router = Router();
@@ -31,6 +33,10 @@ class BaseController extends BasePagination {
 
   protected get mustAuthorized(): RequestHandler {
     return this.authMiddleware.mustAuthorized.bind(this.authMiddleware);
+  }
+
+  protected allowedRoles(roles: RolesEnum[]): RequestHandler {
+    return allowedRoles(roles);
   }
 
   protected validate<T>(
