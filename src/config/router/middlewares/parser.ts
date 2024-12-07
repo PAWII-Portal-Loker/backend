@@ -6,7 +6,11 @@ import * as formidable from "formidable";
 import fs from "fs";
 import path from "path";
 
-export function parseFormData(req: Request, res: Response, next: NextFunction) {
+export default function parseFormData(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   const form = new formidable.IncomingForm();
   form.parse(req, async (err, _, files) => {
     if (err) {

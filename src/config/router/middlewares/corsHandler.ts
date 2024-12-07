@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-export function corsHandler() {
+export default function corsHandler() {
   return (_: Request, res: Response, next: NextFunction) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
