@@ -12,13 +12,16 @@ import {
   CompanyUpdateDto,
   CompanyUpdateSchema,
 } from "@company/dtos/companyUpdate.dto";
+import AuthService from "@auth/services/auth.service";
 
 class CompanyController extends BaseController {
   private companyService = new CompanyService();
   private companyFilter = new CompanyFilter();
+  private authService: AuthService;
 
   constructor() {
     super();
+    this.authService = new AuthService(this.redisClient);
     this.getAllCompanies();
     this.getCompanyById();
     this.createCompany();
@@ -100,6 +103,21 @@ class CompanyController extends BaseController {
         if (this.isServiceError(res, company)) {
           return;
         }
+
+        const signData = {
+          userId: userId,
+          deviceId: res.locals.deviceId,
+        };
+        const signIn = await this.authService.signIn(signData);
+        if (this.isServiceError(res, signIn)) {
+          return;
+        }
+
+        console.log(signIn);
+
+        res.setHeader("x-access-token", signIn.accessToken);
+        res.setHeader("x-refresh-token", signIn.refreshToken);
+        res.setHeader("x-user-id", userId);
 
         return this.handleSuccess(res, {
           statusCode: StatusCreated,

@@ -12,13 +12,16 @@ import {
   JobSeekerUpdateDto,
   JobSeekerUpdateSchema,
 } from "@jobSeeker/dtos/jobSeekerUpdate.dto";
+import AuthService from "@auth/services/auth.service";
 
 class JobSeekerController extends BaseController {
   private jobSeekerService = new JobSeekerService();
   private jobSeekerFilter = new JobSeekerFilter();
+  private authService: AuthService;
 
   constructor() {
     super();
+    this.authService = new AuthService(this.redisClient);
     this.getAllJobSeekers();
     this.getJobSeekerById();
     this.createJobSeeker();
@@ -102,6 +105,19 @@ class JobSeekerController extends BaseController {
         if (this.isServiceError(res, jobSeeker)) {
           return;
         }
+
+        const signData = {
+          userId: userId,
+          deviceId: res.locals.deviceId,
+        };
+        const signIn = await this.authService.signIn(signData);
+        if (this.isServiceError(res, signIn)) {
+          return;
+        }
+
+        res.setHeader("x-access-token", signIn.accessToken);
+        res.setHeader("x-refresh-token", signIn.refreshToken);
+        res.setHeader("x-user-id", userId);
 
         return this.handleSuccess(res, {
           statusCode: StatusCreated,
