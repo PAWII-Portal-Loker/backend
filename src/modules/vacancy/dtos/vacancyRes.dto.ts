@@ -4,7 +4,7 @@ import { JobTypeEnums } from "@enums/consts/jobTypes";
 
 export interface VacancyResDto {
   id: string;
-  company: CompanyResDto;
+  company?: CompanyResDto;
   jobType: JobTypeEnums;
   incomeType: IncomeTypeEnums;
   position: string;

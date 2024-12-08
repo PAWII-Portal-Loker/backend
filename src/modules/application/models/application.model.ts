@@ -9,7 +9,7 @@ const applicationSchema = new Schema<ApplicationDto>(
       required: true,
     },
     vacancyId: { type: Schema.Types.ObjectId, ref: "Vacancy", required: true },
-    documentUrls: { type: [String], required: true },
+    documentUrls: { type: [String] },
     message: { type: String, required: true },
   },
   {

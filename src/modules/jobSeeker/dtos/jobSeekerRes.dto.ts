@@ -3,7 +3,7 @@ import { UserResDto } from "@user/dtos/userRes.dto";
 
 export interface JobSeekerResDto {
   id: string;
-  user: UserResDto;
+  user?: UserResDto;
   name: string;
   lastEducation: LastEducationTypeEnum;
   major: string;

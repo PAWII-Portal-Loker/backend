@@ -10,6 +10,7 @@ import FileUploadController from "@fileUpload/controllers/fileUpload.controller"
 import VacancyController from "@vacancy/controllers/vacancy.controller";
 import AWSS3Instance from "@integrations/aws/awsS3Instance";
 import JobSeekerController from "@jobSeeker/controllers/jobSeeker.controller";
+import ApplicationController from "@application/controllers/application.controller";
 
 new MongoDatabase({
   dbHost: env.get("MONGO_DB_HOST"),
@@ -36,6 +37,7 @@ router.app.use("/api/", new AuthController().getRouter());
 router.app.use("/api/", new CompanyController().getRouter());
 router.app.use("/api/", new JobSeekerController().getRouter());
 router.app.use("/api/", new VacancyController().getRouter());
+router.app.use("/api/", new ApplicationController().getRouter());
 
 router.app.get("/", (_, res) => {
   res.json({

@@ -119,7 +119,7 @@ class AuthController extends BaseController {
           message: "Success signing in",
           data: {
             isLogin,
-            role: isLogin ? userRole : false,
+            role: isLogin ? userRole : null,
           },
         });
       },

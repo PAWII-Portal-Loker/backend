@@ -129,7 +129,7 @@ class AuthMiddleware extends RedisService {
       if (validAccessToken && validAccessToken.userId === headers.userId) {
         // console.log("A4");
         res.setLocals("userId", validAccessToken.userId);
-        res.setLocals("role", "roleNotImplementedYet");
+        res.setLocals("role", validAccessToken.role);
       }
 
       return next();
