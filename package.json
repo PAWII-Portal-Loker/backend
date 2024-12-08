@@ -1,6 +1,6 @@
 {
   "name": "expressts-restful-api-templete",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,6 +19,7 @@
     "@aws-sdk/s3-request-presigner": "^3.703.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
     "formidable": "^3.5.2",
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/express-rate-limit": "^6.0.2",
     "@types/formidable": "^3.4.5",
     "@types/jsonwebtoken": "^9.0.7",
     "eslint": "^9.8.0",

@@ -2,7 +2,7 @@ import { baseErrorRes } from "@consts";
 import { StatusUnauthorized } from "@consts/statusCodes";
 import { NextFunction, Request, Response } from "express";
 
-const whitelistedRoutes = ["GET:/v1/files"];
+const whitelistedRoutes = ["GET:/api/v1/files", "GET:/api/health-check"];
 
 export default function requiredHeaders() {
   return (req: Request, res: Response, next: NextFunction) => {

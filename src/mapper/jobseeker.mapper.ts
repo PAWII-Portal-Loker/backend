@@ -6,15 +6,15 @@ import { JobSeekerResDto } from "@jobSeeker/dtos/jobSeekerRes.dto";
 
 export function jobSeekerMapper(
   jobSeeker: JobSeekerDto,
-  user: UserDto,
+  user?: UserDto,
 ): JobSeekerResDto {
   return {
     id: (jobSeeker?._id as string) ?? "",
-    user: userMapper(user),
+    user: user && userMapper(user),
     name: jobSeeker?.name ?? "",
-    lastEducation: jobSeeker?. lastEducation ?? "",
-    major: jobSeeker?. major ?? "",
-    gpa: jobSeeker?. gpa ?? "",
+    lastEducation: jobSeeker?.lastEducation ?? "",
+    major: jobSeeker?.major ?? "",
+    gpa: jobSeeker?.gpa ?? "",
     createdAt: jobSeeker?.createdAt ?? "",
     updatedAt: jobSeeker?.updatedAt ?? "",
   };
