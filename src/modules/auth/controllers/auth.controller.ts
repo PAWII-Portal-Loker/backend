@@ -29,11 +29,9 @@ class AuthController extends BaseController {
         return;
       }
 
-      // passing role when role system is implemented
       const signData: Partial<SignInDto> = {
         userId: user._id as string,
         deviceId: res.locals.deviceId,
-        refreshToken: res.getHeader("x-refresh-token") as string,
       };
 
       const signIn = await this.authService.signIn(signData);
@@ -119,7 +117,7 @@ class AuthController extends BaseController {
           message: "Success signing in",
           data: {
             isLogin,
-            role: isLogin ? userRole : null,
+            role: isLogin ? userRole || null : null,
           },
         });
       },
