@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import { JobSeekerGetSchema } from "@jobSeeker/dtos/jobSeekerReq.dto";
-import JobSeekerFilter from "@jobSeeker/filters/jobSeeker.filter";
+import JobSeekerFilter from "@jobSeeker/services/jobSeeker.filterService";
 import JobSeekerService from "@jobSeeker/services/jobSeeker.service";
 import {
   JobSeekerCreateDto,

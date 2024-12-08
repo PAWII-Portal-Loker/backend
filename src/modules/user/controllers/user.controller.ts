@@ -3,7 +3,7 @@ import { UserCreateDto, UserCreateSchema } from "@user/dtos/userCreate.dto";
 import UserService from "@user/services/user.service";
 import BaseController from "@base/controller";
 import { StatusCreated } from "@consts/statusCodes";
-import UserFilter from "@user/filters/user.filter";
+import UserFilter from "@user/services/user.filterService";
 import { UserGetSchema } from "@user/dtos/userReq.dto";
 
 class UserController extends BaseController {

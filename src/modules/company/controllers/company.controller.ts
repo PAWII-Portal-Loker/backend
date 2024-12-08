@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import { CompanyGetSchema } from "@company/dtos/companyReq.dto";
-import CompanyFilter from "@company/filters/company.filter";
+import CompanyFilter from "@company/services/company.filterService";
 import CompanyService from "@company/services/company.service";
 import {
   CompanyCreateDto,
