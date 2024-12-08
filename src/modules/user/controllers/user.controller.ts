@@ -55,18 +55,22 @@ class UserController extends BaseController {
   }
 
   private async getUserById() {
-    this.router.get("/v1/users/:id", async (req: Request, res: Response) => {
-      const userId = req.params.id;
-      const user = await this.userService.getUserById(userId);
-      if (this.isServiceError(res, user)) {
-        return;
-      }
+    this.router.get(
+      "/v1/users/:id",
+      this.mustAuthorized,
+      async (req: Request, res: Response) => {
+        const userId = req.params.id;
+        const user = await this.userService.getUserById(userId);
+        if (this.isServiceError(res, user)) {
+          return;
+        }
 
-      return this.handleSuccess(res, {
-        message: "Success getting user",
-        data: user,
-      });
-    });
+        return this.handleSuccess(res, {
+          message: "Success getting user",
+          data: user,
+        });
+      },
+    );
   }
 
   private async createUser() {

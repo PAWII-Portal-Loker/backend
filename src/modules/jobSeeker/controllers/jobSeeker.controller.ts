@@ -13,6 +13,7 @@ import {
   JobSeekerUpdateSchema,
 } from "@jobSeeker/dtos/jobSeekerUpdate.dto";
 import AuthService from "@auth/services/auth.service";
+import { ROLE_JOB_SEEKER } from "@enums/consts/roles";
 
 class JobSeekerController extends BaseController {
   private jobSeekerService = new JobSeekerService();
@@ -29,37 +30,42 @@ class JobSeekerController extends BaseController {
   }
 
   private async getAllJobSeekers() {
-    this.router.get("/v1/job-seekers", async (req: Request, res: Response) => {
-      const reqParam = this.validateQuery(req, res, JobSeekerGetSchema);
-      if (!reqParam) {
-        return;
-      }
+    this.router.get(
+      "/v1/job-seekers",
+      this.mustAuthorized,
+      async (req: Request, res: Response) => {
+        const reqParam = this.validateQuery(req, res, JobSeekerGetSchema);
+        if (!reqParam) {
+          return;
+        }
 
-      const paginator = this.paginate(reqParam.page, reqParam.limit);
-      const filters = this.jobSeekerFilter.handleFilter(reqParam);
+        const paginator = this.paginate(reqParam.page, reqParam.limit);
+        const filters = this.jobSeekerFilter.handleFilter(reqParam);
 
-      const [jobSeekers, count] = await Promise.all([
-        this.jobSeekerService.getAllJobSeekers(filters, paginator),
-        this.jobSeekerService.count(filters),
-      ]);
-      if (this.isServiceError(res, jobSeekers)) {
-        return;
-      }
+        const [jobSeekers, count] = await Promise.all([
+          this.jobSeekerService.getAllJobSeekers(filters, paginator),
+          this.jobSeekerService.count(filters),
+        ]);
+        if (this.isServiceError(res, jobSeekers)) {
+          return;
+        }
 
-      return this.handleSuccess(
-        res,
-        {
-          message: "Success getting job seekers",
-          data: jobSeekers,
-        },
-        this.handlePagination(paginator, count),
-      );
-    });
+        return this.handleSuccess(
+          res,
+          {
+            message: "Success getting job seekers",
+            data: jobSeekers,
+          },
+          this.handlePagination(paginator, count),
+        );
+      },
+    );
   }
 
   private async getJobSeekerById() {
     this.router.get(
       "/v1/job-seekers/:id",
+      this.mustAuthorized,
       async (req: Request, res: Response) => {
         const jobSeekerId = req.params.id;
         const jobSeeker =
@@ -132,6 +138,7 @@ class JobSeekerController extends BaseController {
     this.router.put(
       "/v1/job-seekers",
       this.mustAuthorized,
+      this.allowedRoles([ROLE_JOB_SEEKER]),
       async (req: Request, res: Response) => {
         const reqBody = this.validate<JobSeekerUpdateDto>(
           req,

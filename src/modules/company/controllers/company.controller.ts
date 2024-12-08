@@ -13,6 +13,7 @@ import {
   CompanyUpdateSchema,
 } from "@company/dtos/companyUpdate.dto";
 import AuthService from "@auth/services/auth.service";
+import { ROLE_COMPANY } from "@enums/consts/roles";
 
 class CompanyController extends BaseController {
   private companyService = new CompanyService();
@@ -132,6 +133,7 @@ class CompanyController extends BaseController {
     this.router.put(
       "/v1/companies",
       this.mustAuthorized,
+      this.allowedRoles([ROLE_COMPANY]),
       async (req: Request, res: Response) => {
         const reqBody = this.validate<CompanyUpdateDto>(
           req,
