@@ -9,6 +9,7 @@ import {
   requiredHeaders,
   snakeCaseHandler,
 } from "./middlewares";
+import rateLimitter from "./middlewares/rateLimitter";
 
 class Router {
   app: express.Application;
@@ -19,6 +20,7 @@ class Router {
     this.app = express();
 
     this.app.use(corsHandler());
+    this.app.use(rateLimitter());
 
     this.app.use(getLocals);
     this.app.use(setLocals);
