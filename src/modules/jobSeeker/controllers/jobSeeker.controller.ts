@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import { JobSeekerGetSchema } from "@jobSeeker/dtos/jobSeekerReq.dto";
-import JobSeekerFilter from "@jobSeeker/filters/jobSeeker.filter";
+import JobSeekerFilter from "@jobSeeker/services/jobSeeker.filterService";
 import JobSeekerService from "@jobSeeker/services/jobSeeker.service";
 import {
   JobSeekerCreateDto,
@@ -12,13 +12,17 @@ import {
   JobSeekerUpdateDto,
   JobSeekerUpdateSchema,
 } from "@jobSeeker/dtos/jobSeekerUpdate.dto";
+import AuthService from "@auth/services/auth.service";
+import { ROLE_JOB_SEEKER } from "@enums/consts/roles";
 
 class JobSeekerController extends BaseController {
   private jobSeekerService = new JobSeekerService();
   private jobSeekerFilter = new JobSeekerFilter();
+  private authService: AuthService;
 
   constructor() {
     super();
+    this.authService = new AuthService(this.redisClient);
     this.getAllJobSeekers();
     this.getJobSeekerById();
     this.createJobSeeker();
@@ -26,37 +30,42 @@ class JobSeekerController extends BaseController {
   }
 
   private async getAllJobSeekers() {
-    this.router.get("/v1/job-seekers", async (req: Request, res: Response) => {
-      const reqParam = this.validateQuery(req, res, JobSeekerGetSchema);
-      if (!reqParam) {
-        return;
-      }
+    this.router.get(
+      "/v1/job-seekers",
+      this.mustAuthorized,
+      async (req: Request, res: Response) => {
+        const reqParam = this.validateQuery(req, res, JobSeekerGetSchema);
+        if (!reqParam) {
+          return;
+        }
 
-      const paginator = this.paginate(reqParam.page, reqParam.limit);
-      const filters = this.jobSeekerFilter.handleFilter(reqParam);
+        const paginator = this.paginate(reqParam.page, reqParam.limit);
+        const filters = this.jobSeekerFilter.handleFilter(reqParam);
 
-      const [jobSeekers, count] = await Promise.all([
-        this.jobSeekerService.getAllJobSeekers(filters, paginator),
-        this.jobSeekerService.count(filters),
-      ]);
-      if (this.isServiceError(res, jobSeekers)) {
-        return;
-      }
+        const [jobSeekers, count] = await Promise.all([
+          this.jobSeekerService.getAllJobSeekers(filters, paginator),
+          this.jobSeekerService.count(filters),
+        ]);
+        if (this.isServiceError(res, jobSeekers)) {
+          return;
+        }
 
-      return this.handleSuccess(
-        res,
-        {
-          message: "Success getting job seekers",
-          data: jobSeekers,
-        },
-        this.handlePagination(paginator, count),
-      );
-    });
+        return this.handleSuccess(
+          res,
+          {
+            message: "Success getting job seekers",
+            data: jobSeekers,
+          },
+          this.handlePagination(paginator, count),
+        );
+      },
+    );
   }
 
   private async getJobSeekerById() {
     this.router.get(
       "/v1/job-seekers/:id",
+      this.mustAuthorized,
       async (req: Request, res: Response) => {
         const jobSeekerId = req.params.id;
         const jobSeeker =
@@ -103,6 +112,19 @@ class JobSeekerController extends BaseController {
           return;
         }
 
+        const signData = {
+          userId: userId,
+          deviceId: res.locals.deviceId,
+        };
+        const signIn = await this.authService.signIn(signData);
+        if (this.isServiceError(res, signIn)) {
+          return;
+        }
+
+        res.setHeader("x-access-token", signIn.accessToken);
+        res.setHeader("x-refresh-token", signIn.refreshToken);
+        res.setHeader("x-user-id", userId);
+
         return this.handleSuccess(res, {
           statusCode: StatusCreated,
           message: "Success creating job seeker",
@@ -116,6 +138,7 @@ class JobSeekerController extends BaseController {
     this.router.put(
       "/v1/job-seekers",
       this.mustAuthorized,
+      this.allowedRoles([ROLE_JOB_SEEKER]),
       async (req: Request, res: Response) => {
         const reqBody = this.validate<JobSeekerUpdateDto>(
           req,

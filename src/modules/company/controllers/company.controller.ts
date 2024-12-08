@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import { CompanyGetSchema } from "@company/dtos/companyReq.dto";
-import CompanyFilter from "@company/filters/company.filter";
+import CompanyFilter from "@company/services/company.filterService";
 import CompanyService from "@company/services/company.service";
 import {
   CompanyCreateDto,
@@ -12,13 +12,17 @@ import {
   CompanyUpdateDto,
   CompanyUpdateSchema,
 } from "@company/dtos/companyUpdate.dto";
+import AuthService from "@auth/services/auth.service";
+import { ROLE_COMPANY } from "@enums/consts/roles";
 
 class CompanyController extends BaseController {
   private companyService = new CompanyService();
   private companyFilter = new CompanyFilter();
+  private authService: AuthService;
 
   constructor() {
     super();
+    this.authService = new AuthService(this.redisClient);
     this.getAllCompanies();
     this.getCompanyById();
     this.createCompany();
@@ -101,6 +105,21 @@ class CompanyController extends BaseController {
           return;
         }
 
+        const signData = {
+          userId: userId,
+          deviceId: res.locals.deviceId,
+        };
+        const signIn = await this.authService.signIn(signData);
+        if (this.isServiceError(res, signIn)) {
+          return;
+        }
+
+        console.log(signIn);
+
+        res.setHeader("x-access-token", signIn.accessToken);
+        res.setHeader("x-refresh-token", signIn.refreshToken);
+        res.setHeader("x-user-id", userId);
+
         return this.handleSuccess(res, {
           statusCode: StatusCreated,
           message: "Success creating company",
@@ -114,6 +133,7 @@ class CompanyController extends BaseController {
     this.router.put(
       "/v1/companies",
       this.mustAuthorized,
+      this.allowedRoles([ROLE_COMPANY]),
       async (req: Request, res: Response) => {
         const reqBody = this.validate<CompanyUpdateDto>(
           req,

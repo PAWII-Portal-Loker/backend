@@ -17,6 +17,7 @@ import {
   VacancyUpdateDto,
   VacancyUpdateSchema,
 } from "@vacancy/dtos/vacancyUpdate.dto";
+import { ROLE_COMPANY } from "@enums/consts/roles";
 
 class VacancyController extends BaseController {
   private vacancyService = new VacancyService();
@@ -33,39 +34,35 @@ class VacancyController extends BaseController {
   }
 
   private async getAllVacancies() {
-    this.router.get(
-      "/v1/vacancies",
-      this.mustAuthorized,
-      async (req: Request, res: Response) => {
-        const reqParam = this.validateQuery(req, res, VacancyGetSchema);
-        if (!reqParam) {
-          return;
-        }
+    this.router.get("/v1/vacancies", async (req: Request, res: Response) => {
+      const reqParam = this.validateQuery(req, res, VacancyGetSchema);
+      if (!reqParam) {
+        return;
+      }
 
-        const paginator = this.paginate(reqParam.page, reqParam.limit);
-        const filters = await this.vacancyFilter.handleFilter(
-          reqParam,
-          res.locals,
-        );
+      const paginator = this.paginate(reqParam.page, reqParam.limit);
+      const filters = await this.vacancyFilter.handleFilter(
+        reqParam,
+        res.locals,
+      );
 
-        const [vacancies, count] = await Promise.all([
-          this.vacancyService.getAllVacancies(filters, paginator),
-          this.vacancyService.count(filters),
-        ]);
-        if (this.isServiceError(res, vacancies)) {
-          return;
-        }
+      const [vacancies, count] = await Promise.all([
+        this.vacancyService.getAllVacancies(filters, paginator),
+        this.vacancyService.count(filters),
+      ]);
+      if (this.isServiceError(res, vacancies)) {
+        return;
+      }
 
-        return this.handleSuccess(
-          res,
-          {
-            message: "Success getting vacancies",
-            data: vacancies,
-          },
-          this.handlePagination(paginator, count),
-        );
-      },
-    );
+      return this.handleSuccess(
+        res,
+        {
+          message: "Success getting vacancies",
+          data: vacancies,
+        },
+        this.handlePagination(paginator, count),
+      );
+    });
   }
 
   private async getVacancyById() {
@@ -91,6 +88,7 @@ class VacancyController extends BaseController {
     this.router.post(
       "/v1/vacancies",
       this.mustAuthorized,
+      this.allowedRoles([ROLE_COMPANY]),
       async (req: Request, res: Response) => {
         const reqBody = this.validate<VacancyCreateDto>(
           req,
@@ -128,6 +126,7 @@ class VacancyController extends BaseController {
     this.router.patch(
       "/v1/vacancies/:id/status",
       this.mustAuthorized,
+      this.allowedRoles([ROLE_COMPANY]),
       async (req: Request, res: Response) => {
         const reqBody = this.validate<VacancyUpdateStatusDto>(
           req,
@@ -181,6 +180,7 @@ class VacancyController extends BaseController {
     this.router.put(
       "/v1/vacancies/:id",
       this.mustAuthorized,
+      this.allowedRoles([ROLE_COMPANY]),
       async (req: Request, res: Response) => {
         const reqBody = this.validate<VacancyUpdateDto>(
           req,

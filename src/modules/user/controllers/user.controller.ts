@@ -3,15 +3,19 @@ import { UserCreateDto, UserCreateSchema } from "@user/dtos/userCreate.dto";
 import UserService from "@user/services/user.service";
 import BaseController from "@base/controller";
 import { StatusCreated } from "@consts/statusCodes";
-import UserFilter from "@user/filters/user.filter";
+import UserFilter from "@user/services/user.filterService";
 import { UserGetSchema } from "@user/dtos/userReq.dto";
+import { SignInDto } from "@auth/dtos/signIn.dto";
+import AuthService from "@auth/services/auth.service";
 
 class UserController extends BaseController {
   private userService = new UserService();
   private userFilter = new UserFilter();
+  private authService: AuthService;
 
   constructor() {
     super();
+    this.authService = new AuthService(this.redisClient);
     this.getAllUsers();
     this.getUserById();
     this.createUser();
@@ -51,18 +55,22 @@ class UserController extends BaseController {
   }
 
   private async getUserById() {
-    this.router.get("/v1/users/:id", async (req: Request, res: Response) => {
-      const userId = req.params.id;
-      const user = await this.userService.getUserById(userId);
-      if (this.isServiceError(res, user)) {
-        return;
-      }
+    this.router.get(
+      "/v1/users/:id",
+      this.mustAuthorized,
+      async (req: Request, res: Response) => {
+        const userId = req.params.id;
+        const user = await this.userService.getUserById(userId);
+        if (this.isServiceError(res, user)) {
+          return;
+        }
 
-      return this.handleSuccess(res, {
-        message: "Success getting user",
-        data: user,
-      });
-    });
+        return this.handleSuccess(res, {
+          message: "Success getting user",
+          data: user,
+        });
+      },
+    );
   }
 
   private async createUser() {
@@ -81,6 +89,20 @@ class UserController extends BaseController {
       if (this.isServiceError(res, newUser)) {
         return;
       }
+
+      const signData: Partial<SignInDto> = {
+        userId: newUserId as string,
+        deviceId: res.locals.deviceId,
+      };
+
+      const signIn = await this.authService.signIn(signData);
+      if (this.isServiceError(res, signIn)) {
+        return;
+      }
+
+      res.setHeader("x-access-token", signIn.accessToken);
+      res.setHeader("x-refresh-token", signIn.refreshToken);
+      res.setHeader("x-user-id", newUserId);
 
       return this.handleSuccess(res, {
         statusCode: StatusCreated,

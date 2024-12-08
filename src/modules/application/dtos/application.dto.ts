@@ -9,13 +9,3 @@ export interface ApplicationDto extends Document, Timestamps {
   documentUrls: string[];
   message: string;
 }
-
-export interface ApplicationResponseDto {
-  id: string;
-  jobSeeker: JobSeekerDto;
-  vacancy: VacancyDto;
-  documentUrls: string[];
-  message: string;
-  createdAt: Date;
-  updatedAt: Date;
-}

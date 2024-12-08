@@ -11,9 +11,11 @@ import { VacancyUpdateDto } from "@vacancy/dtos/vacancyUpdate.dto";
 import { VacancyUpdateStatusDto } from "@vacancy/dtos/vacancyUpdateStatus.dto";
 import { VacancyModel } from "@vacancy/models/vacancy.model";
 import { isValidObjectId } from "mongoose";
+import UserService from "@user/services/user.service";
 
 class VacancyService extends BaseMongoService<VacancyDto> {
   private companyService = new CompanyService();
+  private userService = new UserService();
 
   constructor() {
     super(VacancyModel);
@@ -29,7 +31,6 @@ class VacancyService extends BaseMongoService<VacancyDto> {
     }
 
     const companyIds = vacancies.map((vac) => vac.companyId);
-
     const companies = await this.companyService.find({
       query: { _id: { $in: companyIds } },
     });
@@ -37,11 +38,20 @@ class VacancyService extends BaseMongoService<VacancyDto> {
       return this.throwError("Error getting companies", StatusBadRequest);
     }
 
+    const companyUserIds = companies.map((c) => c.userId);
+    const companyUsers = await this.userService.find({
+      query: { _id: { $in: companyUserIds } },
+    });
+    if (!companyUsers) {
+      return this.throwError("Error getting users", StatusBadRequest);
+    }
+
     return vacancies.map((vacancy) => {
-      return vacancyMapper(
-        vacancy,
-        companies.find((c) => isIdEquals(c._id, vacancy.companyId))!,
+      const company = companies.find((c) =>
+        isIdEquals(c._id, vacancy.companyId),
       );
+      const user = companyUsers.find((u) => isIdEquals(u._id, company?.userId));
+      return vacancyMapper(vacancy, company, user);
     });
   }
 
@@ -64,7 +74,12 @@ class VacancyService extends BaseMongoService<VacancyDto> {
       return this.throwError("Error getting company", StatusBadRequest);
     }
 
-    return vacancyMapper(vacancy, company);
+    const user = await this.userService.findOne({ _id: company.userId });
+    if (!user) {
+      return this.throwError("Error getting user", StatusBadRequest);
+    }
+
+    return vacancyMapper(vacancy, company, user);
   }
 
   public async createVacancy(
