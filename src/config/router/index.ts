@@ -6,10 +6,11 @@ import {
   camelCaseHandler,
   corsHandler,
   jsonParseHandler,
+  rateLimitter,
   requiredHeaders,
   snakeCaseHandler,
 } from "./middlewares";
-import rateLimitter from "./middlewares/rateLimitter";
+import { healthCheck } from "./healthCheck";
 
 class Router {
   app: express.Application;
@@ -33,6 +34,8 @@ class Router {
 
     this.host = env.get("BE_HOST");
     this.port = Number(env.get("BE_PORT"));
+
+    this.app.get("/api/health-check", healthCheck);
   }
 
   listen() {
