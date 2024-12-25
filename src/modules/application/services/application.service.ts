@@ -152,49 +152,6 @@ class ApplicationService extends BaseMongoService<ApplicationDto> {
 
       return vacancyApplicantMapper(application, jobSeeker, user);
     });
-
-    // const vacancyIds = applications.map((app) => app.vacancyId);
-    // const vacancies = await this.vacancyService.find({
-    //   query: { _id: { $in: vacancyIds } },
-    // });
-    // if (!vacancies) {
-    //   return this.throwError("Error getting vacancies", StatusBadRequest);
-    // }
-
-    // const companyIds = vacancies.map((vac) => vac.companyId);
-    // const companies = await this.companyService.find({
-    //   query: { _id: { $in: companyIds } },
-    // });
-    // if (!companies) {
-    //   return this.throwError("Error getting companies", StatusBadRequest);
-    // }
-
-    // const companyUserIds = companies.map((c) => c.userId);
-    // const companyUsers = await this.userService.find({
-    //   query: { _id: { $in: companyUserIds } },
-    // });
-    // if (!companyUsers) {
-    //   return this.throwError("Error getting users", StatusBadRequest);
-    // }
-
-    // return applications.map((application) => {
-    //   const vacancy = vacancies.find((v) =>
-    //     isIdEquals(v._id, application.vacancyId),
-    //   )!;
-    //   const company = companies.find((c) =>
-    //     isIdEquals(c._id, vacancy.companyId),
-    //   )!;
-    //   const companyUser = companyUsers.find((u) =>
-    //     isIdEquals(u._id, company.userId),
-    //   )!;
-
-    //   return jobSeekerApplicationMapper(
-    //     application,
-    //     vacancy,
-    //     company,
-    //     companyUser,
-    //   );
-    // });
   }
 
   public async getVacancyApplicantById(
@@ -256,179 +213,16 @@ class ApplicationService extends BaseMongoService<ApplicationDto> {
       return this.throwError("Error creating application", StatusBadRequest);
     }
 
+    // async update
+    this.vacancyService.update(
+      { _id: data.vacancyId },
+      {
+        appliedCount: vacancy.appliedCount + 1,
+      },
+    );
+
     return newApplication._id as string;
   }
-
-  // public async getAllApplications(
-  //   filters: DataFilter,
-  //   paginator: Pagination,
-  // ): Promise<ApplicationResDto[] | ServiceError> {
-  //   const applications = await this.find(filters, paginator);
-  //   if (!applications) {
-  //     return this.throwError("Error getting applications", StatusBadRequest);
-  //   }
-
-  //   const vacancyIds = applications.map((app) => app.vacancyId);
-  //   const vacancies = await this.vacancyService.find({
-  //     query: { _id: { $in: vacancyIds } },
-  //   });
-  //   if (!vacancies) {
-  //     return this.throwError("Error getting vacancies", StatusBadRequest);
-  //   }
-
-  //   const jobSeekerIds = applications.map((app) => app.jobSeekerId);
-  //   const jobSeekers = await this.jobSeekerService.find({
-  //     query: { _id: { $in: jobSeekerIds } },
-  //   });
-  //   if (!jobSeekers) {
-  //     return this.throwError("Error getting job seekers", StatusBadRequest);
-  //   }
-
-  //   const companyIds = vacancies.map((vac) => vac.companyId);
-  //   const companies = await this.companyService.find({
-  //     query: { _id: { $in: companyIds } },
-  //   });
-  //   if (!companies) {
-  //     return this.throwError("Error getting companies", StatusBadRequest);
-  //   }
-
-  //   const jobSeekerUserIds = jobSeekers.map((js) => js.userId);
-  //   const jobSeekerUsers = await this.userService.find({
-  //     query: { _id: { $in: jobSeekerUserIds } },
-  //   });
-  //   if (!jobSeekerUsers) {
-  //     return this.throwError("Error getting users", StatusBadRequest);
-  //   }
-
-  //   const companyUserIds = companies.map((c) => c.userId);
-  //   const companyUsers = await this.userService.find({
-  //     query: { _id: { $in: companyUserIds } },
-  //   });
-  //   if (!companyUsers) {
-  //     return this.throwError("Error getting users", StatusBadRequest);
-  //   }
-
-  //   return applications.map((application) => {
-  //     const vacancy = vacancies.find((v) =>
-  //       isIdEquals(v._id, application.vacancyId),
-  //     )!;
-  //     const jobSeeker = jobSeekers.find((js) =>
-  //       isIdEquals(js._id, application.jobSeekerId),
-  //     )!;
-  //     const company = companies.find((c) =>
-  //       isIdEquals(c._id, vacancy.companyId),
-  //     )!;
-  //     const jobSeekerUser = jobSeekerUsers.find((u) =>
-  //       isIdEquals(u._id, jobSeeker.userId),
-  //     )!;
-  //     const companyUser = companyUsers.find((u) =>
-  //       isIdEquals(u._id, company.userId),
-  //     )!;
-
-  //     return applicationMapper(
-  //       application,
-  //       vacancy,
-  //       jobSeeker,
-  //       company,
-  //       jobSeekerUser,
-  //       companyUser,
-  //     );
-  //   });
-  // }
-
-  // public async getVacancyById(
-  //   id: string,
-  // ): Promise<VacancyResDto | ServiceError> {
-  //   if (!isValidObjectId(id)) {
-  //     return this.throwError("Invalid vacancy ID", StatusBadRequest);
-  //   }
-
-  //   const vacancy = await this.findOne({ _id: id });
-  //   if (!vacancy) {
-  //     return this.throwError("vacancy not found", StatusNotFound);
-  //   }
-
-  //   const company = await this.companyService.findOne({
-  //     _id: vacancy.companyId,
-  //   });
-  //   if (!company) {
-  //     return this.throwError("Error getting company", StatusBadRequest);
-  //   }
-
-  //   return vacancyMapper(vacancy, company);
-  // }
-
-  // public async createVacancy(
-  //   data: Partial<VacancyCreateDto>,
-  //   userId: string,
-  // ): Promise<string | ServiceError> {
-  //   const company = await this.companyService.findOne({ userId });
-  //   if (!company) {
-  //     return this.throwError("Company not found", StatusNotFound);
-  //   }
-
-  //   const createVacancyPayload = {
-  //     companyId: company._id,
-  //     jobType: data.jobType,
-  //     incomeType: data.incomeType,
-  //     position: data.position,
-  //     thumbnailUrl: data.thumbnailUrl ?? undefined,
-  //     description: data.description,
-  //     isClosed: false,
-  //     appliedCount: 0,
-  //   };
-
-  //   const newVacancy = await this.create(createVacancyPayload);
-  //   if (!newVacancy) {
-  //     return this.throwError("Error creating vacancy", StatusBadRequest);
-  //   }
-
-  //   return newVacancy._id as string;
-  // }
-
-  // public async updateVacancyStatus(
-  //   vacancyId: string,
-  //   data: VacancyUpdateStatusDto,
-  // ): Promise<string | ServiceError> {
-  //   if (!isValidObjectId(vacancyId)) {
-  //     return this.throwError("Invalid vacancy ID", StatusBadRequest);
-  //   }
-
-  //   const updatedVacancy = await this.update(
-  //     { _id: vacancyId },
-  //     { isClosed: data.isClosed },
-  //   );
-  //   if (!updatedVacancy) {
-  //     return this.throwError("Error updating vacancy status", StatusBadRequest);
-  //   }
-
-  //   return updatedVacancy._id as string;
-  // }
-
-  // public async updateVacancy(
-  //   vacancyId: string,
-  //   data: VacancyUpdateDto,
-  // ): Promise<string | ServiceError> {
-  //   if (!isValidObjectId(vacancyId)) {
-  //     return this.throwError("Invalid vacancy ID", StatusBadRequest);
-  //   }
-
-  //   const updatedVacancy = await this.update(
-  //     { _id: vacancyId },
-  //     {
-  //       jobType: data.jobType,
-  //       incomeType: data.incomeType,
-  //       position: data.position,
-  //       thumbnailUrl: data.thumbnailUrl,
-  //       description: data.description,
-  //     },
-  //   );
-  //   if (!updatedVacancy) {
-  //     return this.throwError("Error updating vacancy", StatusBadRequest);
-  //   }
-
-  //   return updatedVacancy._id as string;
-  // }
 }
 
 export default ApplicationService;
