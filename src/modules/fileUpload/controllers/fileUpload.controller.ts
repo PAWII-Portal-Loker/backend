@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import BaseController from "@base/controller";
 import { BaseFile } from "@types";
-import { StatusNoContent } from "@consts/statusCodes";
+import { StatusNoContent, StatusOk } from "@consts/statusCodes";
 import { MB_10 } from "@consts";
 import AWSS3Service from "@integrations/aws/awsS3Service";
 import parseFormData from "@config/router/middlewares/parser";
@@ -30,7 +30,7 @@ class FileUploadController extends BaseController {
         return;
       }
 
-      res.redirect(result as string);
+      res.status(StatusOk).json({ url: result });
     });
   }
 
