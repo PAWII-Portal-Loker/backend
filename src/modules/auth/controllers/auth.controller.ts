@@ -4,6 +4,8 @@ import { SignInDto, SignInSchema } from "../dtos/signIn.dto";
 import AuthService from "../services/auth.service";
 import UserSubservice from "@user/services/user.subservice";
 import { StatusNotFound } from "@consts/statusCodes";
+import { ForgetPasswordSchema } from "@auth/dtos/forgetPassword.dto";
+import { v4 as uuidv4 } from "uuid";
 
 class AuthController extends BaseController {
   private userSubservice = new UserSubservice();
@@ -15,6 +17,7 @@ class AuthController extends BaseController {
     this.signIn();
     this.signOut();
     this.isLogin();
+    this.forgetPassword();
   }
 
   private async signIn() {
@@ -119,6 +122,43 @@ class AuthController extends BaseController {
             isLogin,
             role: isLogin ? userRole || null : null,
           },
+        });
+      },
+    );
+  }
+
+  private async forgetPassword() {
+    this.router.post(
+      "/v1/auth/forget-password",
+      async (req: Request, res: Response) => {
+        const reqBody = this.validate(req, res, ForgetPasswordSchema);
+        if (!reqBody) {
+          return;
+        }
+
+        const user = await this.userSubservice.findOne({
+          email: reqBody.email,
+        });
+        if (!user) {
+          return this.handleError(res, {
+            statusCode: StatusNotFound,
+            message: "User not found",
+          });
+        }
+
+        const resetToken = uuidv4();
+
+        await this.redisClient.set(
+          `forget-password:${resetToken}`,
+          user._id as string,
+          "EX",
+          30,
+        );
+
+        // TODO: Send password reset email to the user with the reset token (e.g., using SendGrid, Mailgun)
+
+        return this.handleSuccess(res, {
+          message: "Password reset email sent",
         });
       },
     );
