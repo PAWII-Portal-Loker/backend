@@ -198,14 +198,7 @@ class AuthController extends BaseController {
           });
         }
 
-        if (!newPassword) {
-          return this.handleError(res, {
-            statusCode: StatusNotFound,
-            message: "New password is required",
-          });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const hashedPassword = await bcrypt.hash(newPassword as string, 10);
 
         const updatedUser = await this.userSubservice.update(
           { _id: userId },
