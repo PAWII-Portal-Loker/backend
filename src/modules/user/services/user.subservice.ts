@@ -4,6 +4,7 @@ import { StatusBadRequest, StatusNotFound } from "@consts/statusCodes";
 import BaseMongoService from "@base/mongoService";
 import { UserModel } from "@user/models/user.model";
 import { RolesEnum } from "@enums/consts/roles";
+import * as bcrypt from "bcrypt";
 
 class UserSubservice extends BaseMongoService<UserDto> {
   constructor() {
@@ -28,11 +29,17 @@ class UserSubservice extends BaseMongoService<UserDto> {
     data: Partial<UserDto>,
   ): Promise<UserDto | ServiceError> {
     const user = await this.findOne({ email: data.email });
+
     if (!user) {
       return this.throwError("User not found", StatusNotFound);
     }
 
-    if (user.password !== data.password) {
+    if (!data.password) {
+      return this.throwError("Password is required", StatusBadRequest);
+    }
+    const isValidPassword = await bcrypt.compare(data.password, user.password);
+
+    if (!isValidPassword) {
       return this.throwError("Invalid password", StatusBadRequest);
     }
 
