@@ -51,9 +51,8 @@ class UserService extends BaseMongoService<UserDto> {
       return this.throwError("User already exists", StatusConflict);
     }
 
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password, 10);
-    }
+    data.password = await bcrypt.hash(data.password as string, 10);
+
     const newUser = await this.create({
       email: data.email,
       password: data.password,
