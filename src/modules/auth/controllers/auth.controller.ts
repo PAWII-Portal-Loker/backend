@@ -4,6 +4,10 @@ import { SignInDto, SignInSchema } from "../dtos/signIn.dto";
 import AuthService from "../services/auth.service";
 import UserSubservice from "@user/services/user.subservice";
 import { StatusNotFound } from "@consts/statusCodes";
+import { ForgetPasswordSchema } from "@auth/dtos/forgetPassword.dto";
+import { v4 as uuidv4 } from "uuid";
+import * as bcrypt from "bcrypt";
+import { ResetPasswordSchema } from "@auth/dtos/resetPassword.dto";
 
 class AuthController extends BaseController {
   private userSubservice = new UserSubservice();
@@ -15,6 +19,8 @@ class AuthController extends BaseController {
     this.signIn();
     this.signOut();
     this.isLogin();
+    this.forgetPassword();
+    this.resetPassword();
   }
 
   private async signIn() {
@@ -119,6 +125,92 @@ class AuthController extends BaseController {
             isLogin,
             role: isLogin ? userRole || null : null,
           },
+        });
+      },
+    );
+  }
+
+  private async forgetPassword() {
+    this.router.post(
+      "/v1/auth/forget-password",
+      async (req: Request, res: Response) => {
+        const reqBody = this.validate(req, res, ForgetPasswordSchema);
+        if (!reqBody) {
+          return;
+        }
+
+        const user = await this.userSubservice.findOne({
+          email: reqBody.email,
+        });
+        if (!user) {
+          return this.handleError(res, {
+            statusCode: StatusNotFound,
+            message: "User not found",
+          });
+        }
+
+        const resetToken = uuidv4();
+
+        await this.redisClient.set(
+          `forget-password:${resetToken}`,
+          user._id as string,
+          "EX",
+          300,
+        );
+
+        // TODO: Send password reset email to the user with the reset token (e.g., using SendGrid, Mailgun)
+
+        return this.handleSuccess(res, {
+          message: "Password reset email sent",
+        });
+      },
+    );
+  }
+
+  private async resetPassword() {
+    this.router.post(
+      "/v1/auth/reset-password",
+      async (req: Request, res: Response) => {
+        const reqBody = this.validate(req, res, ResetPasswordSchema);
+        if (!reqBody) {
+          return;
+        }
+
+        const { resetToken, newPassword } = reqBody;
+
+        const userId = await this.redisClient.get(
+          `forget-password:${resetToken}`,
+        );
+
+        if (!userId) {
+          return this.handleError(res, {
+            statusCode: StatusNotFound,
+            message: "Invalid or expired reset token",
+          });
+        }
+
+        const user = await this.userSubservice.findOne({ _id: userId });
+        if (!user) {
+          return this.handleError(res, {
+            statusCode: StatusNotFound,
+            message: "User not found",
+          });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword!, 10);
+
+        const updatedUser = await this.userSubservice.update(
+          { _id: userId },
+          { password: hashedPassword },
+        );
+        if (this.isServiceError(res, updatedUser)) {
+          return;
+        }
+
+        this.redisClient.del(`forget-password:${resetToken}`);
+
+        return this.handleSuccess(res, {
+          message: "Password reset successful",
         });
       },
     );

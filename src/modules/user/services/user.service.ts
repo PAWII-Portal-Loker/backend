@@ -11,6 +11,7 @@ import {
   StatusNotFound,
 } from "@consts/statusCodes";
 import { isValidObjectId } from "mongoose";
+import * as bcrypt from "bcrypt";
 
 class UserService extends BaseMongoService<UserDto> {
   constructor() {
@@ -49,6 +50,8 @@ class UserService extends BaseMongoService<UserDto> {
     if (user) {
       return this.throwError("User already exists", StatusConflict);
     }
+
+    data.password = await bcrypt.hash(data.password!, 10);
 
     const newUser = await this.create({
       email: data.email,
