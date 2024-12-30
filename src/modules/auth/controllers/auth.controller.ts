@@ -190,7 +190,6 @@ class AuthController extends BaseController {
         }
 
         const user = await this.userSubservice.findOne({ _id: userId });
-
         if (!user) {
           return this.handleError(res, {
             statusCode: StatusNotFound,
@@ -198,18 +197,17 @@ class AuthController extends BaseController {
           });
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword as string, 10);
+        const hashedPassword = await bcrypt.hash(newPassword!, 10);
 
         const updatedUser = await this.userSubservice.update(
           { _id: userId },
           { password: hashedPassword },
         );
-
         if (this.isServiceError(res, updatedUser)) {
           return;
         }
 
-        await this.redisClient.del(`forget-password:${resetToken}`);
+        this.redisClient.del(`forget-password:${resetToken}`);
 
         return this.handleSuccess(res, {
           message: "Password reset successful",

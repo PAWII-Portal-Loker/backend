@@ -34,10 +34,7 @@ class UserSubservice extends BaseMongoService<UserDto> {
       return this.throwError("User not found", StatusNotFound);
     }
 
-    const isValidPassword = await bcrypt.compare(
-      data.password as string,
-      user.password,
-    );
+    const isValidPassword = await bcrypt.compare(data.password!, user.password);
 
     if (!isValidPassword) {
       return this.throwError("Invalid password", StatusBadRequest);
